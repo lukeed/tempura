@@ -1,20 +1,19 @@
 const param = 'xyz';
+const INVALID = /^\d|[^a-z0-9_$]/gi;
+const CURLY = /{{\s*(.*?)\s*}}/g;
 
-export function transform(input) {
-	let locals = {};
+export function transform(input, options={}) {
+	let minify = !!options.minify;
 	let stack=[], vars={};
+	let locals = {};
 	// let cache; // includes cache
 
-	let rgx = /{{\s*(.*?)\s*}}/g;
 	let last=0, wip='', txt='', match;
-
 	let char, num, action, tmp;
 
 	function close() {
 		if (wip.length > 0) {
-			// TODO: options.minify
-			// txt += (txt ? 'output+=' : '=') + '`' + (true ? wip.replace(/([\t\s]+(?=<|$)|(\r?\n)+)/g, '') : wip) + '`;'; // template literal
-			txt += (txt ? 'output+=' : '=') + '"' + (true ? wip.replace(/([\t\s]+(?=<|$)|(\r?\n)+)/g, '') : wip) + '";';
+			txt += (txt ? 'x+=' : '=') + '"' + (minify ? wip.replace(/([\t\s]+(?=<|$)|(\r?\n)+)/g, '') : wip) + '";';
 		} else if (txt.length === 0) {
 			txt = '="";'
 		}
@@ -26,8 +25,7 @@ export function transform(input) {
 			return key;
 		}
 
-		var i=0, arr=key.split('.'), str='';
-		var tmp, rgx=/^\d|[^a-z0-9_$]/gi;
+		let i=0, tmp, arr=key.split('.'), str='';
 
 		for (; i < arr.length; i++) {
 			tmp = arr[i];
@@ -35,14 +33,14 @@ export function transform(input) {
 				str += tmp;
 			} else {
 				if (i===0) str += param;
-				str += rgx.test(tmp) ? `[${JSON.stringify(tmp)}]` : `.${tmp}`;
+				str += INVALID.test(tmp) ? `[${JSON.stringify(tmp)}]` : `.${tmp}`;
 			}
 		}
 
 		return str;
 	}
 
-	while (match = rgx.exec(input)) {
+	while (match = CURLY.exec(input)) {
 		let [full, inner] = match;
 		// wip += input.substring(last, match.index).replace(/(\r?\n)+$/g, ''); // template literal
 		if (wip) wip += '+"';
@@ -50,9 +48,9 @@ export function transform(input) {
 		last = match.index + full.length;
 
 		char = inner.charAt(0);
-		if (char === '!') continue;
-
-		if (char === '#') {
+		if (char === '!') {
+			// continue
+		} else if (char === '#') {
 			close();
 			num = inner.indexOf(' ');
 			action = !!~num ? inner.substring(1, num++) : inner.substring(num=1);
@@ -73,7 +71,6 @@ export function transform(input) {
 				inner = inner.substring(num+4).trim();
 
 				let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
-
 				txt += `for(var ${idx}=0,${item},arr=${ident(tmp)};${idx}<arr.length;${idx}++){${item}=arr[${idx}];`;
 				stack.push(action + '~' + item + ',' + idx); // 'each~item,idx'
 				vars[item] = vars[idx] = true;
@@ -108,7 +105,7 @@ export function transform(input) {
 
 	if (wip) close();
 
-	return 'var output' + txt + 'return output';
+	return 'var x' + txt + 'return x';
 }
 
 export function compile(body) {
