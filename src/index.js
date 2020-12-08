@@ -100,7 +100,12 @@ export function transform(input, options={}) {
 		}
 	}
 
-	if (wip) close();
+	if (last < input.length) {
+		wip += input.substring(last).replace(/(\r?\n)+$/g, '');
+		close();
+	} else {
+		close();
+	}
 
 	return 'var x' + txt + 'return x';
 }
