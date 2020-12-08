@@ -65,13 +65,20 @@ export function transform(input, options={}) {
 				txt += `var ${tmp}=${inner.replace(/[;]$/, '')};`;
 			} else if (action === 'each') {
 				num = inner.indexOf(' as ');
-				tmp = inner.substring(0, num).trim();
-				inner = inner.substring(num+4).trim();
 
-				let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
-				txt += `for(var ${idx}=0,${item},arr=${ident(tmp)};${idx}<arr.length;${idx}++){${item}=arr[${idx}];`;
-				stack.push(action + '~' + item + ',' + idx); // 'each~item,idx'
-				vars[item] = vars[idx] = true;
+				if (!!~num) {
+					tmp = inner.substring(0, num).trim();
+					inner = inner.substring(num+4).trim();
+					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
+					txt += `for(var ${idx}=0,${item},arr=${ident(tmp)};${idx}<arr.length;${idx}++){${item}=arr[${idx}];`;
+					stack.push(action + '~' + item + ',' + idx); // 'each~item,idx'
+					vars[item] = vars[idx] = true;
+				} else {
+					tmp = inner.trim();
+					txt += `for(var i=0,arr=${ident(tmp)};i<arr.length;i++){`;
+					stack.push(action + '~' + 'i'); // 'each~i'
+					vars['i'] = true;
+				}
 			} else if (action === 'if') {
 				txt += `if(${ ident(inner.trim()) }){`;
 				stack.push(action);

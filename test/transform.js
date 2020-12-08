@@ -174,6 +174,13 @@ comments.run();
 
 const each = suite('each');
 
+each('{{#each items}}...{{/each}}', () => {
+	assert.is(
+		transform('{{#each items}}<p>hello</p>{{/each}}'),
+		'var x="";for(var i=0,arr=xyz.items;i<arr.length;i++){x+=`<p>hello</p>`;}return x'
+	);
+});
+
 each('{{#each items as item}}...{{/each}}', () => {
 	assert.is(
 		transform('{{#each items as item}}<p>hello {{item.name}}</p>{{/each}}'),
