@@ -35,7 +35,7 @@ values('{{ foo.bar }}', () => {
 	);
 });
 
-values.skip('{{ foo["bar"] }}', () => {
+values('{{ foo["bar"] }}', () => {
 	assert.is(
 		transform('{{ foo["bar"] }}'),
 		'var x=`${xyz.foo["bar"]}`;return x'
@@ -112,7 +112,7 @@ vars('{{#var foo = {...} }}', () => {
 	);
 });
 
-vars.skip('{{#var foo = [...] }}', () => {
+vars('{{#var foo = [...] }}', () => {
 	assert.is(
 		transform('{{#var name = ["luke"] }}<p>hello {{ name[0] }}</p>'),
 		'var x="";var name=["luke"];x+=`<p>hello ${name[0]}</p>`;return x'

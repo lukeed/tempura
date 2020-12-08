@@ -25,15 +25,17 @@ export function transform(input, options={}) {
 			return key;
 		}
 
-		let i=0, tmp, arr=key.split('.'), str='';
+		let i=0, tmp, str='', arr=key.split(/[.]|(\[['"`]?.*[`'"]?\])/g);
 
 		for (; i < arr.length; i++) {
-			tmp = arr[i];
+			if (tmp = arr[i]) {
 			if (i===0 && (vars[tmp] || locals[tmp])) {
 				str += tmp;
 			} else {
 				if (i===0) str += param;
-				str += INVALID.test(tmp) ? `[${JSON.stringify(tmp)}]` : `.${tmp}`;
+					if (tmp[0]==='[') str += tmp;
+					else str += INVALID.test(tmp) ? `[${JSON.stringify(tmp)}]` : `.${tmp}`;
+				}
 			}
 		}
 
