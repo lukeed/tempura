@@ -1,5 +1,6 @@
 const param = 'xyz';
-const INVALID = /^\d|[^a-z0-9_$]/gi;
+const ENDLINES = /(\r?\n)+$/g;
+const INVALID = /^\d|[^A-Za-z0-9_$]/g;
 const CURLY = /{{\s*(.*?)\s*}}/g;
 
 export function transform(input, options={}) {
@@ -44,7 +45,7 @@ export function transform(input, options={}) {
 
 	while (match = CURLY.exec(input)) {
 		let [full, inner] = match;
-		wip += input.substring(last, match.index).replace(/(\r?\n)+$/g, '');
+		wip += input.substring(last, match.index).replace(ENDLINES, '');
 		last = match.index + full.length;
 
 		char = inner.charAt(0);
@@ -110,7 +111,7 @@ export function transform(input, options={}) {
 	}
 
 	if (last < input.length) {
-		wip += input.substring(last).replace(/(\r?\n)+$/g, '');
+		wip += input.substring(last).replace(ENDLINES, '');
 		close();
 	} else {
 		close();
