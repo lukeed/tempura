@@ -13,7 +13,7 @@ export function transform(input, options={}) {
 
 	function close() {
 		if (wip.length > 0) {
-			txt += (txt ? 'x+=' : '=') + '"' + (minify ? wip.replace(/([\t\s]+(?=<|$)|(\r?\n)+)/g, '') : wip) + '";';
+			txt += (txt ? 'x+=' : '=') + '`' + (minify ? wip.replace(/([\t\s]+(?=<|$)|(\r?\n)+)/g, '') : wip) + '`;';
 		} else if (txt.length === 0) {
 			txt = '="";'
 		}
@@ -42,8 +42,6 @@ export function transform(input, options={}) {
 
 	while (match = CURLY.exec(input)) {
 		let [full, inner] = match;
-		// wip += input.substring(last, match.index).replace(/(\r?\n)+$/g, ''); // template literal
-		if (wip) wip += '+"';
 		wip += input.substring(last, match.index).replace(/(\r?\n)+$/g, '');
 		last = match.index + full.length;
 
@@ -97,9 +95,8 @@ export function transform(input, options={}) {
 				break;
 			}
 		} else {
-			// wip += '${' + ident(inner) + '}'; // template literal
 			// TODO: options.escape
-			wip += '"+' + ident(inner);
+			wip += '${' + ident(inner) + '}';
 		}
 	}
 
