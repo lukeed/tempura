@@ -62,7 +62,7 @@ export function transform(input, options={}) {
 				locals[tmp] = true;
 				// TODO: value is property vs function vs string
 				// console.log({ tmp, inner });
-				txt += `var ${tmp}=${inner};`;
+				txt += `var ${tmp}=${inner.replace(/[;]$/, '')};`;
 			} else if (action === 'each') {
 				num = inner.indexOf(' as ');
 				tmp = inner.substring(0, num).trim();
