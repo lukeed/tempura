@@ -1,0 +1,21 @@
+{{#expect title, items, isActive }}
+
+<h1>{{title}}</h1>
+
+{{#var foo = 'world'}}
+{{! comment }}
+<div>{{ foo }}</div>
+
+<ul>
+{{#each items as (item, idx) }}
+	<li>{{ item }} @ {{idx}}</li>
+{{/each}}
+</ul>
+
+{{#if isActive}}
+	<p>active</p>
+	{{!-- TODO --}}
+	{{#include partial ... foo=bar }}
+{{#else}}
+	<p>inactive</p>
+{{/if}}

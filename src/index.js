@@ -5,8 +5,8 @@ const CURLY = /{{\s*(.*?)\s*}}/g;
 
 export function transform(input, options={}) {
 	let minify = !!options.minify;
+	let locals = options.locals||{};
 	let stack=[], vars={};
-	let locals = {};
 	// let cache; // includes cache
 
 	let last=0, wip='', txt='', match;
@@ -30,10 +30,10 @@ export function transform(input, options={}) {
 
 		for (; i < arr.length; i++) {
 			if (tmp = arr[i]) {
-			if (i===0 && (vars[tmp] || locals[tmp])) {
-				str += tmp;
-			} else {
-				if (i===0) str += param;
+				if (i===0 && (vars[tmp] || locals[tmp])) {
+					str += tmp;
+				} else {
+					if (i===0) str += param;
 					if (tmp[0]==='[') str += tmp;
 					else str += INVALID.test(tmp) ? `[${JSON.stringify(tmp)}]` : `.${tmp}`;
 				}
@@ -88,7 +88,7 @@ export function transform(input, options={}) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else {
-				console.error('UNKNOWN', { inner, action })
+				throw new Error(`unknown - ${JSON.stringify({ action })}`);
 			}
 		} else if (char === '/') {
 			close();
@@ -101,8 +101,7 @@ export function transform(input, options={}) {
 					vars[key] = false;
 				});
 			} else {
-				console.error('MISMATCH', { action, inner });
-				break;
+				throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
 			}
 		} else {
 			// TODO: options.escape

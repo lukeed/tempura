@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "devDependencies": {
+    "art-template": "4.13.2",
+    "benchmark": "2.1.4",
+    "dot": "1.1.3",
+    "handlebars": "4.7.6",
+    "pug": "3.0.0",
+    "tempura": "file:../",
+    "yeahjs": "0.2.0"
+  }
+}

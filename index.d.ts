@@ -1,5 +1,8 @@
 export interface Options {
 	minify?: boolean;
+	scope?: Record<string, boolean>;
+	escape?: string;
+	cache?: Record<string, Compiler>;
 }
 
 export function transform(input: string, options?: Options): string;
