@@ -85,6 +85,8 @@ export function transform(input, options={}) {
 			} else if (action === 'if') {
 				txt += `if(${ ident(inner.trim()) }){`;
 				stack.push(action);
+			} else if (action === 'elif') {
+				txt += `}else if(${ ident(inner.trim()) }){`;
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else {

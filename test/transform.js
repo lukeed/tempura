@@ -70,6 +70,20 @@ control('{{#if foo.bar}}...{{#else}}...{{/if}}', () => {
 	);
 });
 
+control.skip('{{#if foo == 0}}...{{#else}}...{{/if}}', () => {
+	assert.is(
+		transform('{{#if foo == 0}}<p>zero</p>{{#else}}<p>not zero</p>{{/if}}'),
+		'var x="";if(xyz.foo == 0){x+=`<p>zero</p>`;}else{x+=`<p>not zero</p>`;}return x'
+	);
+});
+
+control('{{#if isActive}}...{{#elif isMuted}}...{{#else}}...{{/if}}', () => {
+	assert.is(
+		transform('{{#if isActive}}<p>active</p>{{#elif isMuted}}<p>muted</p>{{#else}}<p>inactive</p>{{/if}}'),
+		'var x="";if(xyz.isActive){x+=`<p>active</p>`;}else if(xyz.isMuted){x+=`<p>muted</p>`;}else{x+=`<p>inactive</p>`;}return x'
+	);
+});
+
 control.run();
 
 // ---
