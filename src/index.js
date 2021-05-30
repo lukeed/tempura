@@ -1,4 +1,3 @@
-const param = 'xyz';
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{\s*([\s\S]*?)\s*}}/g;
 
@@ -46,10 +45,10 @@ export function transform(input, options={}) {
 					tmp = inner.substring(0, num).trim();
 					inner = inner.substring(num + 4).trim();
 					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
-					txt += `for(var ${idx}=0,${item},arr=${tmp};${idx}<arr.length;${idx}++){${item}=arr[${idx}];`;
+					txt += `for(var ${idx}=0,${item},a$a=${tmp};${idx}<a$a.length;${idx}++){${item}=a$a[${idx}];`;
 					stack.push(action + '~' + item + ',' + idx); // 'each~item,idx'
 				} else {
-					txt += `for(var i=0,arr=${inner.trim()};i<arr.length;i++){`;
+					txt += `for(var i=0,a$a=${inner.trim()};i<a$a.length;i++){`;
 					stack.push(action + '~' + 'i'); // 'each~i'
 				}
 			} else if (action === 'if') {
@@ -77,15 +76,14 @@ export function transform(input, options={}) {
 
 	if (last < input.length) {
 		wip += input.substring(last).replace(ENDLINES, '');
-		close();
-	} else {
-		close();
 	}
 
-	tmp = initials.size ? `{${ [...initials].join() }}=${param},x` : ' x';
-	return 'var' + tmp + txt + 'return x';
+	close();
+
+	tmp = initials.size ? `{${ [...initials].join() }}=x$x,x` : ' x';
+	return `var${tmp + txt}return x`;
 }
 
 export function compile(body) {
-	return new Function(param, body);
+	return new Function('x$x', body);
 }
