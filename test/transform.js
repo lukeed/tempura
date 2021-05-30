@@ -118,6 +118,13 @@ control('{{#if isActive}}...{{#elif isMuted}}...{{#else}}...{{/if}}', () => {
 	);
 });
 
+control('{{#if isActive}}...{{#elif isMuted}}...{{/if}}', () => {
+	assert.is(
+		transform('{{#if isActive}}<p>active</p>{{#elif isMuted}}<p>muted</p>{{/if}}'),
+		'var x="";if(isActive){x+=`<p>active</p>`;}else if(isMuted){x+=`<p>muted</p>`;}return x'
+	);
+});
+
 control.run();
 
 // ---

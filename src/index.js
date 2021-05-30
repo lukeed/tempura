@@ -65,13 +65,10 @@ export function transform(input, options={}) {
 		} else if (char === '/') {
 			close();
 			inner = stack.pop();
-			if (action === inner || (action === 'else' && inner === 'if')) {
-				txt += '}';
-			} else if (action === 'each' && inner.startsWith('each~')) {
-				txt += '}'; // end for loop
-			} else {
-				throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
-			}
+			if (action === inner) txt += '}';
+			else if (inner === 'if' && (action === 'else' || action === 'elif')) txt += '}';
+			else if (action === 'each' && inner.startsWith('each~')) txt += '}'; // end for loop
+			else throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
 		} else {
 			// TODO: options.escape
 			wip += '${' + inner + '}';
