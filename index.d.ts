@@ -1,8 +1,7 @@
 export interface Options {
+	props?: string[];
 	minify?: boolean;
-	scope?: Record<string, boolean>;
-	escape?: string;
-	cache?: Record<string, Compiler>;
+	// escape?: boolean;
 }
 
 export function transform(input: string, options?: Options): string;

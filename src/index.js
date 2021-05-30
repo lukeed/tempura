@@ -2,11 +2,11 @@ const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{\s*([\s\S]*?)\s*}}/g;
 
 export function transform(input, options={}) {
+	let char, num, action, tmp;
+	let last=0, wip='', txt='', match;
+
 	let minify = !!options.minify, stack=[];
 	let initials = new Set(options.props || []);
-
-	let last=0, wip='', txt='', match;
-	let char, num, action, tmp;
 
 	function close() {
 		if (wip.length > 0) {
@@ -59,6 +59,7 @@ export function transform(input, options={}) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else {
+				// TODO: custom directive
 				throw new Error(`unknown - ${JSON.stringify({ action })}`);
 			}
 		} else if (char === '/') {
