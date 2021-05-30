@@ -53,6 +53,41 @@ values.run();
 
 // ---
 
+const expect = suite('expect');
+
+expect('{{#expect foo,bar}}', () => {
+	assert.is(
+		transform('{{#expect foo,bar}}'),
+		'var x="";var{foo,bar}=xyz;return x'
+	);
+
+	assert.is(
+		transform('{{#expect foo , bar}}'),
+		'var x="";var{foo,bar}=xyz;return x'
+	);
+
+	assert.is(
+		transform('{{#expect\n\tfoo ,bar}}'),
+		'var x="";var{foo,bar}=xyz;return x'
+	);
+});
+
+expect('{{#expect foobar}}', () => {
+	assert.is(
+		transform('{{#expect foobar}}'),
+		'var x="";var{foobar}=xyz;return x'
+	);
+
+	assert.is(
+		transform('{{#expect \n  foobar\n}}'),
+		'var x="";var{foobar}=xyz;return x'
+	);
+});
+
+expect.run();
+
+// ---
+
 // TODO: {{#if foo != 0}}
 const control = suite('control');
 

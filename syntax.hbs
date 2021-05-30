@@ -1,4 +1,7 @@
-{{#expect title, items, isActive }}
+{{#expect title, items, isActive}}
+{{#expect
+	hello, world
+}}
 
 <h1>{{title}}</h1>
 
@@ -15,7 +18,7 @@
 {{#if isActive}}
 	<p>active</p>
 	{{!-- TODO --}}
-	{{#include partial ... foo=bar }}
+	{{#include 'partial' foo=bar src=true }}
 {{#else}}
 	<p>inactive</p>
 {{/if}}

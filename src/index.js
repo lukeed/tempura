@@ -1,7 +1,9 @@
 const param = 'xyz';
 const ENDLINES = /(\r?\n)+$/g;
 const INVALID = /^\d|[^A-Za-z0-9_$]/g;
-const CURLY = /{{\s*(.*?)\s*}}/g;
+const CURLY = /{{\s*([\s\S]*?)\s*}}/g;
+// const CURLY = /{{\s*(.*?)\s*}}/g;
+// const CURLY = /{{([^}]*)}}/g
 
 export function transform(input, options={}) {
 	let minify = !!options.minify;
@@ -44,20 +46,22 @@ export function transform(input, options={}) {
 	}
 
 	while (match = CURLY.exec(input)) {
-		let [full, inner] = match;
 		wip += input.substring(last, match.index).replace(ENDLINES, '');
-		last = match.index + full.length;
+		last = match.index + match[0].length;
+		let inner = match[1].trim();
 
 		char = inner.charAt(0);
 		if (char === '!') {
-			// continue
+			// comment, continue
 		} else if (char === '#') {
 			close();
-			num = inner.indexOf(' ');
-			action = !!~num ? inner.substring(1, num++) : inner.substring(num=1);
-			inner = inner.substring(num);
+			[, action, inner] = /^#\s*([a-zA-Z]+)\s*(.*)/.exec(inner);
 
-			if (action === 'var') {
+			if (action === 'expect') {
+				tmp = inner.trim().split(/[\n\r\s\t]*,[\n\r\s\t]*/g);
+				txt += `var{${ tmp.join(',') }}=${param};`;
+				tmp.forEach(key => locals[key]=true);
+			} else if (action === 'var') {
 				num = inner.indexOf('=');
 				tmp = inner.substring(0, num++).trim();
 				inner = inner.substring(num).trim();
