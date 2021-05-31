@@ -340,3 +340,19 @@ each('{{#each items as item, idx}}...{{/each}}', () => {
 });
 
 each.run();
+
+// ---
+
+const unknown = suite('unknown');
+
+unknown('should throw error on unknown directive', () => {
+	try {
+		transform('{{#include "name" src=true }}');
+		assert.unreachable('should have thrown');
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, 'Unknown "include" block');
+	}
+});
+
+unknown.run();

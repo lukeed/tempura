@@ -70,7 +70,7 @@ export function transform(input, options) {
 				txt += `}else{`;
 			} else {
 				// TODO: custom directive
-				throw new Error(`unknown - ${JSON.stringify({ action })}`);
+				throw new Error(`Unknown "${action}" block`);
 			}
 		} else if (char === '/') {
 			close();
