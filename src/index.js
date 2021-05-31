@@ -1,5 +1,5 @@
 const ENDLINES = /[\r\n]+$/g;
-const CURLY = /{{\s*([\s\S]*?)\s*}}/g;
+const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
 const ESCAPE = /[&"<]/g, CHARS = {
 	'"': '&quot;',
 	'&': '&amp;',
@@ -75,6 +75,8 @@ export function transform(input, options={}) {
 			else if (inner === 'if' && (action === 'else' || action === 'elif')) txt += '}';
 			else if (action === 'each' && inner.startsWith('each~')) txt += '}'; // end for loop
 			else throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
+		} else if (match[0].charAt(2) === '{') {
+			wip += '${' + inner + '}'; // {{{ raw }}}
 		} else {
 			wip += '${$$1(' + inner + ')}';
 		}
