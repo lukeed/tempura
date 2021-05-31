@@ -1,6 +1,9 @@
 export function transform(input: string, options?: {
 	props?: string[];
 	minify?: boolean;
+	extra?: {
+		[directive: string]: (inner: string, full: string) => string;
+	}
 }): string;
 
 export type Compiler = <T extends Record<string, any>> (data: T) => string;

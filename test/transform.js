@@ -356,3 +356,67 @@ unknown('should throw error on unknown directive', () => {
 });
 
 unknown.run();
+
+// ---
+
+const extra = suite('extra');
+
+extra('should allow custom directives', () => {
+	let ran = false;
+	let tmpl = '{{#include "name" src=true }}';
+
+	let output = transform(tmpl, {
+		extra: {
+			include(inner, full) {
+				ran = true;
+				assert.is(full, tmpl);
+				assert.is(inner, '"name" src=true');
+				return 'replacement;';
+			}
+		}
+	});
+
+	assert.is(ran, true);
+	assert.type(output, 'string');
+	assert.is(output, 'var x="";replacement;return x');
+});
+
+extra('should ensure ";" after replacement', () => {
+	let output = transform('{{#foo}}', {
+		extra: {
+			foo() {
+				return 'bar';
+			}
+		}
+	});
+
+	assert.is(output, 'var x="";bar;return x');
+});
+
+extra('should omit block if no replacement', () => {
+	let output = transform('{{#var foo = 123}}{{#bar}}{{#baz}}{{#bat}}{{{ foo }}}', {
+		extra: {
+			bar: () => '',
+			baz: () => false,
+			bat: () => 0,
+		}
+	});
+
+	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
+});
+
+extra('should still throw on unknown block', () => {
+	try {
+		transform('{{#var foo = 123}}{{#bar}}{{#howdy}}{{{ foo }}}', {
+			extra: {
+				bar: () => 'bar'
+			}
+		});
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, 'Unknown "howdy" block');
+	}
+});
+
+extra.run();

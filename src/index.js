@@ -14,6 +14,7 @@ export function transform(input, options) {
 	let last = CURLY.lastIndex = 0;
 	let wip='', txt='', match, inner;
 
+	let extra = options.extra || {};
 	let minify = !!options.minify, stack=[];
 	let initials = new Set(options.props || []);
 
@@ -68,8 +69,12 @@ export function transform(input, options) {
 				txt += `}else if(${inner.trim()}){`;
 			} else if (action === 'else') {
 				txt += `}else{`;
+			} else if (tmp = extra[action]) {
+				if (inner = tmp(inner, match[0])) {
+					if (!inner.endsWith(';')) inner += ';';
+					txt += inner;
+				}
 			} else {
-				// TODO: custom directive
 				throw new Error(`Unknown "${action}" block`);
 			}
 		} else if (char === '/') {
