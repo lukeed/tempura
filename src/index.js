@@ -7,9 +7,12 @@ const ESCAPE = /[&"<]/g, CHARS = {
 };
 
 // $$1 = escape(); $$2 = template values
-export function transform(input, options={}) {
+export function transform(input, options) {
+	options = options || {};
+
 	let char, num, action, tmp;
-	let last=0, wip='', txt='', match;
+	let last = CURLY.lastIndex = 0;
+	let wip='', txt='', match, inner;
 
 	let minify = !!options.minify, stack=[];
 	let initials = new Set(options.props || []);
@@ -26,9 +29,10 @@ export function transform(input, options={}) {
 	while (match = CURLY.exec(input)) {
 		wip += input.substring(last, match.index).replace(ENDLINES, '');
 		last = match.index + match[0].length;
-		let inner = match[1].trim();
 
+		inner = match[1].trim();
 		char = inner.charAt(0);
+
 		if (char === '!') {
 			// comment, continue
 		} else if (char === '#') {
