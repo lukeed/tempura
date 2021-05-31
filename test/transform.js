@@ -420,3 +420,81 @@ extra('should still throw on unknown block', () => {
 });
 
 extra.run();
+
+// ---
+
+const stack = suite('stack');
+
+stack('should throw on incorrect block order :: if->each', () => {
+	try {
+		transform(`
+			{{#expect items}}
+			{{#if items.length > 0}}
+				{{#each items as item}}
+					<p>{{{ item.name }}}</p>
+			{{/if}}
+		`);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, `Expected to close "each" block; closed "if" instead`);
+	}
+});
+
+stack('should throw on incorrect block order :: each->if', () => {
+	try {
+		transform(`
+			{{#each items as item}}
+				{{#if items.length > 0}}
+					<p>{{{ item.name }}}</p>
+			{{/each}}
+		`);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, `Expected to close "if" block; closed "each" instead`);
+	}
+});
+
+stack('unterminated #if block', () => {
+	try {
+		transform(`
+			{{#if items.length > 0}}
+				<p>{{{ item.name }}}</p>
+		`);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, `Unterminated "if" block`);
+	}
+});
+
+stack('unterminated #if->#elif block', () => {
+	try {
+		transform(`
+			{{#if items.length === 1}}
+				<p>{{{ item.name }}}</p>
+			{{#elif items.length === 2}}
+				<p>has two items</p>
+		`);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, `Unterminated "if" block`);
+	}
+});
+
+stack('unterminated #each block', () => {
+	try {
+		transform(`
+			{{#each items as item}}
+				<p>{{{ item.name }}}</p>
+		`);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, `Unterminated "each" block`);
+	}
+});
+
+stack.run();

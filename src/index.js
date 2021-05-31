@@ -76,16 +76,21 @@ export function transform(input, options) {
 				throw new Error(`Unknown "${action}" block`);
 			}
 		} else if (char === '/') {
-			close();
+			action = inner.substring(1);
 			inner = stack.pop();
+			close();
 			if (action === inner) txt += '}';
 			else if (inner === 'if' && (action === 'else' || action === 'elif')) txt += '}';
-			else throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
+			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
 		} else if (match[0].charAt(2) === '{') {
 			wip += '${' + inner + '}'; // {{{ raw }}}
 		} else {
 			wip += '${$$1(' + inner + ')}';
 		}
+	}
+
+	if (stack.length > 0) {
+		throw new Error(`Unterminated "${stack.pop()}" block`);
 	}
 
 	if (last < input.length) {
