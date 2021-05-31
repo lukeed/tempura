@@ -1,7 +1,12 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{\s*([\s\S]*?)\s*}}/g;
+const ESCAPE = /[&"<]/g, CHARS = {
+	'"': '&quot;',
+	'&': '&amp;',
+	'<': '&lt',
+};
 
-// $$1 = template values
+// $$1 = escape(); $$2 = template values
 export function transform(input, options={}) {
 	let char, num, action, tmp;
 	let last=0, wip='', txt='', match;
@@ -71,8 +76,7 @@ export function transform(input, options={}) {
 			else if (action === 'each' && inner.startsWith('each~')) txt += '}'; // end for loop
 			else throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
 		} else {
-			// TODO: options.escape
-			wip += '${' + inner + '}';
+			wip += '${$$1(' + inner + ')}';
 		}
 	}
 
@@ -82,10 +86,22 @@ export function transform(input, options={}) {
 
 	close();
 
-	tmp = initials.size ? `{${ [...initials].join() }}=$$1,x` : ' x';
+	tmp = initials.size ? `{${ [...initials].join() }}=$$2,x` : ' x';
 	return `var${tmp + txt}return x`;
 }
 
-export function compile(body) {
-	return new Function('$$1', body);
+export function compile(body, options) {
+	let esc = options && options.escape || toEscape;
+	return new Function('$$1', '$$2', body).bind(0, esc);
+}
+
+function toEscape(value) {
+	if (typeof value !== 'string') return value;
+	let last=ESCAPE.lastIndex=0, tmp=0, out='';
+	while (ESCAPE.test(value)) {
+		tmp = ESCAPE.lastIndex - 1;
+		out += value.substring(last, tmp) + CHARS[value[tmp]];
+		last = tmp + 1;
+	}
+	return out + value.substring(last);
 }

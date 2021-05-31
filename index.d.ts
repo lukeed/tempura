@@ -1,10 +1,10 @@
-export interface Options {
+export function transform(input: string, options?: {
 	props?: string[];
 	minify?: boolean;
-	// escape?: boolean;
-}
-
-export function transform(input: string, options?: Options): string;
+}): string;
 
 export type Compiler = <T extends Record<string, any>> (data: T) => string;
-export function compile(template: string): Compiler;
+
+export function compile(template: string, options?: {
+	escape?: <T=unknown>(value: T) => T|string;
+}): Compiler;
