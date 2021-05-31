@@ -1,6 +1,7 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{\s*([\s\S]*?)\s*}}/g;
 
+// $$1 = template values
 export function transform(input, options={}) {
 	let char, num, action, tmp;
 	let last=0, wip='', txt='', match;
@@ -45,10 +46,10 @@ export function transform(input, options={}) {
 					tmp = inner.substring(0, num).trim();
 					inner = inner.substring(num + 4).trim();
 					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
-					txt += `for(var ${idx}=0,${item},a$a=${tmp};${idx}<a$a.length;${idx}++){${item}=a$a[${idx}];`;
+					txt += `for(var ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
 					stack.push(action + '~' + item + ',' + idx); // 'each~item,idx'
 				} else {
-					txt += `for(var i=0,a$a=${inner.trim()};i<a$a.length;i++){`;
+					txt += `for(var i=0,$$a=${inner.trim()};i<$$a.length;i++){`;
 					stack.push(action + '~' + 'i'); // 'each~i'
 				}
 			} else if (action === 'if') {
@@ -81,10 +82,10 @@ export function transform(input, options={}) {
 
 	close();
 
-	tmp = initials.size ? `{${ [...initials].join() }}=x$x,x` : ' x';
+	tmp = initials.size ? `{${ [...initials].join() }}=$$1,x` : ' x';
 	return `var${tmp + txt}return x`;
 }
 
 export function compile(body) {
-	return new Function('x$x', body);
+	return new Function('$$1', body);
 }

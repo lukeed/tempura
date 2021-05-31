@@ -58,29 +58,29 @@ const expect = suite('expect');
 expect('{{#expect foo,bar}}', () => {
 	assert.is(
 		transform('{{#expect foo,bar}}'),
-		'var{foo,bar}=x$x,x="";return x'
+		'var{foo,bar}=$$1,x="";return x'
 	);
 
 	assert.is(
 		transform('{{#expect foo , bar}}'),
-		'var{foo,bar}=x$x,x="";return x'
+		'var{foo,bar}=$$1,x="";return x'
 	);
 
 	assert.is(
 		transform('{{#expect\n\tfoo ,bar}}'),
-		'var{foo,bar}=x$x,x="";return x'
+		'var{foo,bar}=$$1,x="";return x'
 	);
 });
 
 expect('{{#expect foobar}}', () => {
 	assert.is(
 		transform('{{#expect foobar}}'),
-		'var{foobar}=x$x,x="";return x'
+		'var{foobar}=$$1,x="";return x'
 	);
 
 	assert.is(
 		transform('{{#expect \n  foobar\n}}'),
-		'var{foobar}=x$x,x="";return x'
+		'var{foobar}=$$1,x="";return x'
 	);
 });
 
@@ -230,43 +230,43 @@ const each = suite('each');
 each('{{#each items}}...{{/each}}', () => {
 	assert.is(
 		transform('{{#each items}}<p>hello</p>{{/each}}'),
-		'var x="";for(var i=0,a$a=items;i<a$a.length;i++){x+=`<p>hello</p>`;}return x'
+		'var x="";for(var i=0,$$a=items;i<$$a.length;i++){x+=`<p>hello</p>`;}return x'
 	);
 });
 
 each('{{#each items as item}}...{{/each}}', () => {
 	assert.is(
 		transform('{{#each items as item}}<p>hello {{item.name}}</p>{{/each}}'),
-		'var x="";for(var i=0,item,a$a=items;i<a$a.length;i++){item=a$a[i];x+=`<p>hello ${item.name}</p>`;}return x'
+		'var x="";for(var i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];x+=`<p>hello ${item.name}</p>`;}return x'
 	);
 
 	assert.is(
 		transform('{{#each items as (item) }}<p>hello {{item.name}}</p>{{/each}}'),
-		'var x="";for(var i=0,item,a$a=items;i<a$a.length;i++){item=a$a[i];x+=`<p>hello ${item.name}</p>`;}return x'
+		'var x="";for(var i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];x+=`<p>hello ${item.name}</p>`;}return x'
 	);
 });
 
 each('{{#each items as (item,idx)}}...{{/each}}', () => {
 	assert.is(
 		transform('<ul>{{#each items as (item,idx)}}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var x=`<ul>`;for(var idx=0,item,a$a=items;idx<a$a.length;idx++){item=a$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
+		'var x=`<ul>`;for(var idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
 	);
 
 	assert.is(
 		transform('<ul>{{#each items as (item, idx) }}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var x=`<ul>`;for(var idx=0,item,a$a=items;idx<a$a.length;idx++){item=a$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
+		'var x=`<ul>`;for(var idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
 	);
 });
 
 each('{{#each items as item, idx}}...{{/each}}', () => {
 	assert.is(
 		transform('<ul>{{#each items as item,idx}}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var x=`<ul>`;for(var idx=0,item,a$a=items;idx<a$a.length;idx++){item=a$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
+		'var x=`<ul>`;for(var idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
 	);
 
 	assert.is(
 		transform('<ul>{{#each items as item, idx }}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var x=`<ul>`;for(var idx=0,item,a$a=items;idx<a$a.length;idx++){item=a$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
+		'var x=`<ul>`;for(var idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];x+=`<li>hello ${item.name} (#${idx})</li>`;}x+=`</ul>`;return x'
 	);
 });
 
