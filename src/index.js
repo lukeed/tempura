@@ -51,16 +51,14 @@ export function transform(input, options) {
 				txt += `var ${tmp}=${inner};`;
 			} else if (action === 'each') {
 				num = inner.indexOf(' as ');
-
-				if (!!~num) {
+				stack.push(action);
+				if (!~num) {
+					txt += `for(var i=0,$$a=${inner.trim()};i<$$a.length;i++){`;
+				} else {
 					tmp = inner.substring(0, num).trim();
 					inner = inner.substring(num + 4).trim();
 					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
 					txt += `for(var ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
-					stack.push(action + '~' + item + ',' + idx); // 'each~item,idx'
-				} else {
-					txt += `for(var i=0,$$a=${inner.trim()};i<$$a.length;i++){`;
-					stack.push(action + '~' + 'i'); // 'each~i'
 				}
 			} else if (action === 'if') {
 				txt += `if(${inner.trim()}){`;
@@ -82,7 +80,6 @@ export function transform(input, options) {
 			inner = stack.pop();
 			if (action === inner) txt += '}';
 			else if (inner === 'if' && (action === 'else' || action === 'elif')) txt += '}';
-			else if (action === 'each' && inner.startsWith('each~')) txt += '}'; // end for loop
 			else throw new Error(`mismatch – ${JSON.stringify({ expect: inner, actual: action })}`);
 		} else if (match[0].charAt(2) === '{') {
 			wip += '${' + inner + '}'; // {{{ raw }}}
