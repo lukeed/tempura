@@ -2,6 +2,22 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import { gen } from '../../src/utils';
 
+const API = suite('API');
+
+API('should be a function', () => {
+	assert.type(gen, 'function');
+});
+
+API('should return a string', () => {
+	assert.type(gen(''), 'string');
+});
+
+API('should throw if no input', () => {
+	assert.throws(gen);
+});
+
+API.run();
+
 // ---
 
 const values = suite('{{ values }}');
