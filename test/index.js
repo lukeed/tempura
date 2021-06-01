@@ -46,3 +46,70 @@ transform('should bubble parsing errors', () => {
 });
 
 transform.run();
+
+// ---
+
+const compile = suite('compile');
+
+compile('should be a function', () => {
+	assert.type(tempura.compile, 'function');
+});
+
+compile('should return a function', () => {
+	let output = tempura.compile('');
+	assert.type(output, 'function');
+});
+
+compile('should produce valid output :: raw', () => {
+	let output = tempura.compile(`
+		{{#expect value}}
+		{{#if value.length > 10}}
+			"{{{ value }}}" is more than 10 characters
+		{{#else}}
+			"{{{ value }}}" is too short
+		{{/if}}
+	`);
+
+	assert.is(
+		output({ value: '<b>howdy</b>' }).replace(/[\r\n\t]+/g, ''),
+		'"<b>howdy</b>" is more than 10 characters'
+	);
+
+	assert.is(
+		output({ value: '<b>aaa</b>' }).replace(/[\r\n\t]+/g, ''),
+		'"<b>aaa</b>" is too short'
+	);
+});
+
+compile('should produce valid output :: escape', () => {
+	let output = tempura.compile(`
+		{{#expect value}}
+		{{#if value.length > 10}}
+			"{{ value }}" is more than 10 characters
+		{{#else}}
+			"{{ value }}" is too short
+		{{/if}}
+	`);
+
+	assert.is(
+		output({ value: '<b>howdy</b>' }).replace(/[\r\n\t]+/g, ''),
+		'"&ltb>howdy&lt/b>" is more than 10 characters'
+	);
+
+	assert.is(
+		output({ value: '<b>aaa</b>' }).replace(/[\r\n\t]+/g, ''),
+		'"&ltb>aaa&lt/b>" is too short'
+	);
+});
+
+compile('should bubble parsing errors', () => {
+	try {
+		tempura.compile('{{#if foo}}stop');
+		assert.unreachable('should have thrown');
+	} catch (err) {
+		assert.instance(err, Error);
+		assert.is(err.message, 'Unterminated "if" block');
+	}
+});
+
+compile.run();
