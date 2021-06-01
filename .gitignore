@@ -5,3 +5,5 @@ node_modules
 *.log
 
 /dist
+/utils
+/index.d.ts

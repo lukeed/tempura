@@ -1,12 +1,20 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import { compile, transform } from '../src';
+import * as utils from '../src/utils';
+import * as tempura from '../src';
+
+// ---
 
 const API = suite('exports');
 
-API('exports', () => {
-	assert.type(compile, 'function');
-	assert.type(transform, 'function');
+API('tempura', () => {
+	assert.type(tempura.compile, 'function');
+	assert.type(tempura.transform, 'function');
+});
+
+API('tempura/utils', () => {
+	assert.type(utils.gen, 'function');
+	assert.type(utils.esc, 'function');
 });
 
 API.run();
