@@ -80,7 +80,6 @@ export function gen(input, options) {
 			inner = stack.pop();
 			close();
 			if (action === inner) txt += '}';
-			else if (inner === 'if' && (action === 'else' || action === 'elif')) txt += '}';
 			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
 		} else if (match[0].charAt(2) === '{') {
 			wip += '${' + inner + '}'; // {{{ raw }}}
