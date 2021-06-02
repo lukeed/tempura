@@ -15,13 +15,12 @@ export function gen(input, options) {
 	let last = CURLY.lastIndex = 0;
 	let wip='', txt='', match, inner;
 
-	let extra = options.extra || {};
-	let minify = !!options.minify, stack=[];
-	let initials = new Set(options.props || []);
+	let extra=options.extra||{}, stack=[];
+	let initials = new Set(options.props||[]);
 
 	function close() {
 		if (wip.length > 0) {
-			txt += (txt ? 'x+=' : '=') + '`' + (minify ? wip.replace(/([\t\s]+(?=<|$)|(\r?\n)+)/g, '') : wip) + '`;';
+			txt += (txt ? 'x+=' : '=') + '`' + wip + '`;';
 		} else if (txt.length === 0) {
 			txt = '="";'
 		}

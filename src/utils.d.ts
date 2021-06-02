@@ -1,6 +1,5 @@
 export interface Options {
 	props?: string[];
-	minify?: boolean;
 	extra?: {
 		[directive: string]: (inner: string, full: string) => string;
 	}
