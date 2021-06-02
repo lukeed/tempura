@@ -102,6 +102,38 @@ compile('should produce valid output :: escape', () => {
 	);
 });
 
+compile('should allow custom `escape` option :: {{value}}', () => {
+	let output = tempura.compile(`
+		{{#expect value}}
+		value is "{{ value }}"
+	`, {
+		escape(val) {
+			return val.replace('foo', 'bar');
+		}
+	});
+
+	assert.is(
+		output({ value: 'foobar' }).replace(/[\r\n\t]+/g, ''),
+		'value is "barbar"'
+	);
+});
+
+compile('should allow custom `escape` option :: {{{ value }}}', () => {
+	let output = tempura.compile(`
+		{{#expect value}}
+		value is "{{{ value }}}"
+	`, {
+		escape(val) {
+			return val.replace('foo', 'bar');
+		}
+	});
+
+	assert.is(
+		output({ value: 'foobar' }).replace(/[\r\n\t]+/g, ''),
+		'value is "foobar"'
+	);
+});
+
 compile('should bubble parsing errors', () => {
 	try {
 		tempura.compile('{{#if foo}}stop');
