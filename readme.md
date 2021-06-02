@@ -21,9 +21,17 @@
 
 ## Features
 
-* TODO 1
-* TODO TODO
-* TODO TODO TODO
+* **Extremely lightweight**<br>
+  _Everything is `1.07 kB` (gzip) – even less with tree-shaking!_
+
+* **Super Performant**<br>
+  _Significantly [faster](#benchmarks) than the big names; and the small ones._
+
+* **Familiar Syntax**<br>
+  _Tempura templates look great with Handlebars syntax highlighting._
+
+* **Custom Directives**<br>
+  _Easily define custom directives, via the [API](#API), to extend functionality._
 
 ## Install
 
