@@ -7,6 +7,7 @@ const ESCAPE = /[&"<]/g, CHARS = {
 };
 
 // $$1 = escape()
+// $$2 = extra blocks
 // $$3 = template values
 export function gen(input, options) {
 	options = options || {};
@@ -15,7 +16,7 @@ export function gen(input, options) {
 	let last = CURLY.lastIndex = 0;
 	let wip='', txt='', match, inner;
 
-	let extra=options.extra||{}, stack=[];
+	let extra=options.blocks||{}, stack=[];
 	let initials = new Set(options.props||[]);
 
 	function close() {
@@ -69,8 +70,13 @@ export function gen(input, options) {
 				txt += `}else{`;
 			} else if (tmp = extra[action]) {
 				if (inner = tmp(inner, match[0])) {
+					tmp = typeof inner;
+					if (tmp === 'function') {
+						txt += `$$2.${action}();`;
+					} else if (tmp === 'string') {
 					if (!inner.endsWith(';')) inner += ';';
 					txt += inner;
+				}
 				}
 			} else {
 				throw new Error(`Unknown "${action}" block`);

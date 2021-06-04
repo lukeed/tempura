@@ -1,7 +1,7 @@
 export interface Options {
 	props?: string[];
-	extra?: {
-		[directive: string]: (inner: string, full: string) => string;
+	blocks?: {
+		[directive: string]: (inner: string, full: string) => string | (()=>string);
 	}
 }
 

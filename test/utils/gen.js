@@ -375,14 +375,14 @@ unknown.run();
 
 // ---
 
-const extra = suite('extra');
+const blocks = suite('blocks');
 
-extra('should allow custom directives', () => {
+blocks('should allow custom directives', () => {
 	let ran = false;
 	let tmpl = '{{#include "name" src=true }}';
 
 	let output = gen(tmpl, {
-		extra: {
+		blocks: {
 			include(inner, full) {
 				ran = true;
 				assert.is(full, tmpl);
@@ -397,9 +397,9 @@ extra('should allow custom directives', () => {
 	assert.is(output, 'var x="";replacement;return x');
 });
 
-extra('should ensure ";" after replacement', () => {
+blocks('should ensure ";" after replacement', () => {
 	let output = gen('{{#foo}}', {
-		extra: {
+		blocks: {
 			foo() {
 				return 'bar';
 			}
@@ -409,9 +409,9 @@ extra('should ensure ";" after replacement', () => {
 	assert.is(output, 'var x="";bar;return x');
 });
 
-extra('should omit block if no replacement', () => {
+blocks('should omit block if no replacement', () => {
 	let output = gen('{{#var foo = 123}}{{#bar}}{{#baz}}{{#bat}}{{{ foo }}}', {
-		extra: {
+		blocks: {
 			bar: () => '',
 			baz: () => false,
 			bat: () => 0,
@@ -421,10 +421,10 @@ extra('should omit block if no replacement', () => {
 	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
 });
 
-extra('should still throw on unknown block', () => {
+blocks('should still throw on unknown block', () => {
 	try {
 		gen('{{#var foo = 123}}{{#bar}}{{#howdy}}{{{ foo }}}', {
-			extra: {
+			blocks: {
 				bar: () => 'bar'
 			}
 		});
@@ -435,7 +435,7 @@ extra('should still throw on unknown block', () => {
 	}
 });
 
-extra.run();
+blocks.run();
 
 // ---
 

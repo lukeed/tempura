@@ -97,10 +97,10 @@ The _names_ of variables that will be provided to a view.
 
 > **NOTE:** Declaring `options.props` names _could_ take the place of `{{#expect ...}}` declarataions – and vice versa. In other words, `options.props` is a programmatic way to define (or skip) `{{#expect}}` blocks. Declaring a variable name in both locations has no effect.
 
-#### options.extra
+#### options.blocks
 Type: `{ ... }`
 
-TODO, may change
+TODO: extra actions/blocks
 
 ## Benchmarks
 
