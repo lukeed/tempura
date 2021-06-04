@@ -123,29 +123,29 @@ const expect = suite('expect');
 expect('{{#expect foo,bar}}', () => {
 	assert.is(
 		gen('{{#expect foo,bar}}'),
-		'var{foo,bar}=$$2,x="";return x'
+		'var{foo,bar}=$$3,x="";return x'
 	);
 
 	assert.is(
 		gen('{{#expect foo , bar}}'),
-		'var{foo,bar}=$$2,x="";return x'
+		'var{foo,bar}=$$3,x="";return x'
 	);
 
 	assert.is(
 		gen('{{#expect\n\tfoo ,bar}}'),
-		'var{foo,bar}=$$2,x="";return x'
+		'var{foo,bar}=$$3,x="";return x'
 	);
 });
 
 expect('{{#expect foobar}}', () => {
 	assert.is(
 		gen('{{#expect foobar}}'),
-		'var{foobar}=$$2,x="";return x'
+		'var{foobar}=$$3,x="";return x'
 	);
 
 	assert.is(
 		gen('{{#expect \n  foobar\n}}'),
-		'var{foobar}=$$2,x="";return x'
+		'var{foobar}=$$3,x="";return x'
 	);
 });
 

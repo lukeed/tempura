@@ -7,7 +7,7 @@ const ESCAPE = /[&"<]/g, CHARS = {
 };
 
 // $$1 = escape()
-// $$2 = template values
+// $$3 = template values
 export function gen(input, options) {
 	options = options || {};
 
@@ -98,7 +98,7 @@ export function gen(input, options) {
 
 	close();
 
-	tmp = initials.size ? `{${ [...initials].join() }}=$$2,x` : ' x';
+	tmp = initials.size ? `{${ [...initials].join() }}=$$3,x` : ' x';
 	return `var${tmp + txt}return x`;
 }
 

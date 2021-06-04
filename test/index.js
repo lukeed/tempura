@@ -24,14 +24,14 @@ transform('should include "esc" import via "tempura/utils" module', () => {
 transform('format :: ESM (default)', () => {
 	let output = tempura.transform('');
 	assert.match(output, 'import{esc as $$1}from"tempura/utils";');
-	assert.match(output, ';export default function($$2){');
+	assert.match(output, ';export default function($$3){');
 	assert.ok(output.endsWith('}'), 'close function');
 });
 
 transform('format :: CommonJS', () => {
 	let output = tempura.transform('', { format: 'cjs' });
 	assert.match(output, 'var{esc:$$1}=require("tempura/utils");');
-	assert.match(output, ';module.exports=function($$2){');
+	assert.match(output, ';module.exports=function($$3){');
 	assert.ok(output.endsWith('}'), 'close function');
 });
 
