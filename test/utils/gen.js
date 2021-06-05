@@ -118,7 +118,7 @@ raws.run();
 
 // ---
 
-const expect = suite('expect');
+const expect = suite('#expect');
 
 expect('{{#expect foo,bar}}', () => {
 	assert.is(
@@ -153,7 +153,7 @@ expect.run();
 
 // ---
 
-const control = suite('control');
+const control = suite('#if');
 
 control('{{#if isActive}}...{{/if}}', () => {
 	assert.is(
@@ -194,7 +194,7 @@ control.run();
 
 // ---
 
-const vars = suite('vars');
+const vars = suite('#vars');
 
 vars('{{#var foo = "world" }}', () => {
 	assert.is(
@@ -265,7 +265,7 @@ vars.run();
 
 // ---
 
-const comments = suite('comments');
+const comments = suite('!comments');
 
 comments('{{! hello }}', () => {
 	assert.is(
@@ -295,7 +295,7 @@ comments.run();
 
 // ---
 
-const each = suite('each');
+const each = suite('#each');
 
 each('{{#each items}}...{{/each}}', () => {
 	assert.is(
@@ -359,9 +359,9 @@ each.run();
 
 // ---
 
-const unknown = suite('unknown');
+const blocks = suite('options.blocks');
 
-unknown('should throw error on unknown directive', () => {
+blocks('should throw error on unknown directive', () => {
 	try {
 		gen('{{#include "name" src=true }}');
 		assert.unreachable('should have thrown');
@@ -370,12 +370,6 @@ unknown('should throw error on unknown directive', () => {
 		assert.is(err.message, 'Unknown "include" block');
 	}
 });
-
-unknown.run();
-
-// ---
-
-const blocks = suite('blocks');
 
 blocks('should allow custom directives', () => {
 	let ran = false;
