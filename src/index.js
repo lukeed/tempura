@@ -1,9 +1,9 @@
 import * as utils from 'tempura/utils';
 
 export function compile(input, options) {
-	options = options || {};
-	return new Function('$$1', '$$2', '$$3', utils.gen(input, options)).bind(
-		0, options.escape || utils.esc, options.blocks
+	return new Function('$$1', '$$2', '$$3', utils.gen(input, options)).bind(0,
+		options && options.escape || utils.esc,
+		options && options.blocks
 	);
 }
 

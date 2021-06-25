@@ -68,16 +68,14 @@ export function gen(input, options) {
 				txt += `}else if(${inner.trim()}){`;
 			} else if (action === 'else') {
 				txt += `}else{`;
-			} else if (tmp = extra[action]) {
-				if (inner = tmp(inner, match[0])) {
-					tmp = typeof inner;
-					if (tmp === 'function') {
-						txt += `$$2.${action}();`;
-					} else if (tmp === 'string') {
-					if (!inner.endsWith(';')) inner += ';';
-					txt += inner;
+			} else if (extra[action]) {
+				// TODO: parse args
+				inner = JSON.stringify(inner);
+				tmp = `$$2.${action}(${inner});`
+				if (match[0].charAt(2) !== '{') {
+					tmp = '$$1(' + tmp + ')'; // not raw
 				}
-				}
+				wip += '${' + tmp + '}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}

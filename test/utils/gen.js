@@ -361,7 +361,7 @@ each.run();
 
 const blocks = suite('options.blocks');
 
-blocks('should throw error on unknown directive', () => {
+blocks('should throw error on unknown block', () => {
 	try {
 		gen('{{#include "name" src=true }}');
 		assert.unreachable('should have thrown');
@@ -409,6 +409,19 @@ blocks('should omit block if no replacement', () => {
 			bar: () => '',
 			baz: () => false,
 			bat: () => 0,
+		}
+	});
+
+	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
+});
+
+blocks.only('should allow functional replacement', () => {
+	let output = gen(`
+		{{#var mark = "?"}}
+		{{#hello "world" mark}}
+	`, {
+		blocks: {
+			hello: console.log
 		}
 	});
 
