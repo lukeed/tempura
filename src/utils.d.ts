@@ -1,8 +1,9 @@
+export type Args = Record<string, any>;
+export type Block<T extends Args = Args> = (args: T) => string;
+
 export interface Options {
 	props?: string[];
-	blocks?: {
-		[directive: string]: (inner: string, full: string) => string | (()=>string);
-	}
+	blocks?: Record<string, Block>;
 }
 
 export function gen(input: string, options?: Options): string;
