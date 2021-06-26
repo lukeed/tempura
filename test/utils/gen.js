@@ -185,7 +185,7 @@ control('{{#if isActive}}...{{#elif isMuted}}...{{#else}}...{{/if}}', () => {
 
 control('{{#if isActive}}...{{#elif isMuted}}...{{/if}}', () => {
 	assert.is(
-		gen('{{#if isActive}}<p>active</p>{{#elif isMuted}}<p>muted</p>{{/if}}'),
+		gen('{{#if isActive    }}<p>active</p>{{#elif isMuted}}<p>muted</p>{{/if}}'),
 		'var x="";if(isActive){x+=`<p>active</p>`;}else if(isMuted){x+=`<p>muted</p>`;}return x'
 	);
 });
@@ -361,37 +361,32 @@ each.run();
 
 const blocks = suite('options.blocks');
 
-blocks('should throw error on unknown directive', () => {
+blocks('should throw error on unknown block', () => {
 	try {
-		gen('{{#include "name" src=true }}');
+		gen('{{#hello}}');
 		assert.unreachable('should have thrown');
 	} catch (err) {
 		assert.instance(err, Error);
-		assert.is(err.message, 'Unknown "include" block');
+		assert.is(err.message, 'Unknown "hello" block');
 	}
 });
 
 blocks('should allow custom directives', () => {
-	let ran = false;
-	let tmpl = '{{#include "name" src=true }}';
+	let tmpl = '{{#include x="name" src=true }}';
 
 	let output = gen(tmpl, {
 		blocks: {
-			include(inner, full) {
-				ran = true;
-				assert.is(full, tmpl);
-				assert.is(inner, '"name" src=true');
-				return 'replacement;';
+			include() {
+				assert.unreachable('do not run function on parse');
 			}
 		}
 	});
 
-	assert.is(ran, true);
 	assert.type(output, 'string');
-	assert.is(output, 'var x="";replacement;return x');
+	assert.is(output, 'var x="";x+=`${$$1($$2.include({x:"name",src:true}))}`;return x');
 });
 
-blocks('should ensure ";" after replacement', () => {
+blocks.skip('should ensure ";" after replacement', () => {
 	let output = gen('{{#foo}}', {
 		blocks: {
 			foo() {
@@ -403,7 +398,8 @@ blocks('should ensure ";" after replacement', () => {
 	assert.is(output, 'var x="";bar;return x');
 });
 
-blocks('should omit block if no replacement', () => {
+// think no longer wanted / applicable
+blocks.skip('should omit block if no replacement', () => {
 	let output = gen('{{#var foo = 123}}{{#bar}}{{#baz}}{{#bat}}{{{ foo }}}', {
 		blocks: {
 			bar: () => '',
@@ -413,6 +409,95 @@ blocks('should omit block if no replacement', () => {
 	});
 
 	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
+});
+
+blocks('should allow functional replacement', () => {
+	let output = gen(`{{#hello "ignored"}}`, {
+		blocks: {
+			hello() {
+				assert.unreachable('do not call functions during parse');
+			}
+		}
+	});
+
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello())}`;return x');
+});
+
+blocks('should allow {{{ raw }}} function callers', () => {
+	let output = gen(`{{{#hello foo="bar"}}}`, {
+		blocks: {
+			hello() {
+				assert.unreachable('do not call functions during parse');
+			}
+		}
+	});
+
+	assert.is(output, 'var x="";x+=`${$$2.hello({foo:"bar"})}`;return x');
+});
+
+blocks('should parse arguments for function callers', () => {
+	let output = gen(`{{#hello foo="foo" arr=["a b c", 123] bar='bar' o = { foo, bar } hi= howdy}}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:"foo",arr:["a b c", 123],bar:'bar',o:{ foo, bar },hi:howdy}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : strings', () => {
+	let output = gen(`{{#hello foo="foo" bar = 'bar'  baz= \`baz\` hello ="foo 'bar' baz" }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:"foo",bar:'bar',baz:\`baz\`,hello:"foo 'bar' baz"}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : booleans', () => {
+	let output = gen(`{{#hello foo=true bar = true  baz= false   hello =false }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:true,bar:true,baz:false,hello:false}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : arrays', () => {
+	let output = gen(`{{#hello foo=[1,2,3] bar = [1, 2,  3]  baz= ['foo','baz'] }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:[1,2,3],bar:[1, 2,  3],baz:['foo','baz']}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : objects', () => {
+	let output = gen(`{{#hello foo={a,b} bar = { x, y:123 } }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:{a,b},bar:{ x, y:123 }}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
 });
 
 blocks('should still throw on unknown block', () => {

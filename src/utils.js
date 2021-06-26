@@ -1,5 +1,6 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
+const ARGS = /([a-zA-Z$_][^\s=]*)\s*=\s*((["`'])(?:(?=(\\?))\4.)*?\3|{[^}]*}|\[[^\]]*]|\S+)/g;
 const ESCAPE = /[&"<]/g, CHARS = {
 	'"': '&quot;',
 	'&': '&amp;',
@@ -42,7 +43,7 @@ export function gen(input, options) {
 			[, action, inner] = /^#\s*([a-zA-Z]+)\s*(.*)/.exec(inner);
 
 			if (action === 'expect') {
-				inner.trim().split(/[\n\r\s\t]*,[\n\r\s\t]*/g).forEach(key => {
+				inner.split(/[\n\r\s\t]*,[\n\r\s\t]*/g).forEach(key => {
 					initials.add(key);
 				});
 			} else if (action === 'var') {
@@ -54,7 +55,7 @@ export function gen(input, options) {
 				num = inner.indexOf(' as ');
 				stack.push(action);
 				if (!~num) {
-					txt += `for(var i=0,$$a=${inner.trim()};i<$$a.length;i++){`;
+					txt += `for(var i=0,$$a=${inner};i<$$a.length;i++){`;
 				} else {
 					tmp = inner.substring(0, num).trim();
 					inner = inner.substring(num + 4).trim();
@@ -62,22 +63,23 @@ export function gen(input, options) {
 					txt += `for(var ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
 				}
 			} else if (action === 'if') {
-				txt += `if(${inner.trim()}){`;
+				txt += `if(${inner}){`;
 				stack.push(action);
 			} else if (action === 'elif') {
-				txt += `}else if(${inner.trim()}){`;
+				txt += `}else if(${inner}){`;
 			} else if (action === 'else') {
 				txt += `}else{`;
-			} else if (tmp = extra[action]) {
-				if (inner = tmp(inner, match[0])) {
-					tmp = typeof inner;
-					if (tmp === 'function') {
-						txt += `$$2.${action}();`;
-					} else if (tmp === 'string') {
-					if (!inner.endsWith(';')) inner += ';';
-					txt += inner;
+			} else if (extra[action]) {
+				num = match[0].charAt(2) !== '{'; // not raw
+				if (inner.length) {
+					tmp = [];
+					// parse arguments, `defer=true` -> `{ defer: true }`
+					while (match = ARGS.exec(inner)) tmp.push(match[1] + ':' + match[2]);
+					inner = tmp.length ? '{' + tmp.join() + '}' : '';
 				}
-				}
+				tmp = `$$2.${action}(${inner})`;
+				if (num) tmp = '$$1(' + tmp + ')'; // not raw
+				wip += '${' + tmp + '}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}

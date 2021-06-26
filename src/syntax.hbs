@@ -18,7 +18,7 @@
 {{#if isActive}}
 	<p>active</p>
 	{{!-- TODO --}}
-	{{#include 'partial' foo=bar src=true }}
+	{{#include src='file.hbs' foo=bar value=123 }}
 {{#else}}
 	<p>inactive</p>
 {{/if}}
