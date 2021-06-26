@@ -185,7 +185,7 @@ control('{{#if isActive}}...{{#elif isMuted}}...{{#else}}...{{/if}}', () => {
 
 control('{{#if isActive}}...{{#elif isMuted}}...{{/if}}', () => {
 	assert.is(
-		gen('{{#if isActive}}<p>active</p>{{#elif isMuted}}<p>muted</p>{{/if}}'),
+		gen('{{#if isActive    }}<p>active</p>{{#elif isMuted}}<p>muted</p>{{/if}}'),
 		'var x="";if(isActive){x+=`<p>active</p>`;}else if(isMuted){x+=`<p>muted</p>`;}return x'
 	);
 });
@@ -445,6 +445,58 @@ blocks('should parse arguments for function callers', () => {
 	});
 
 	let args = `{foo:"foo",arr:["a b c", 123],bar:'bar',o:{ foo, bar },hi:howdy}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : strings', () => {
+	let output = gen(`{{#hello foo="foo" bar = 'bar'  baz= \`baz\` hello ="foo 'bar' baz" }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:"foo",bar:'bar',baz:\`baz\`,hello:"foo 'bar' baz"}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : booleans', () => {
+	let output = gen(`{{#hello foo=true bar = true  baz= false   hello =false }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:true,bar:true,baz:false,hello:false}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : arrays', () => {
+	let output = gen(`{{#hello foo=[1,2,3] bar = [1, 2,  3]  baz= ['foo','baz'] }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:[1,2,3],bar:[1, 2,  3],baz:['foo','baz']}`;
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+});
+
+blocks('arguments parsing : objects', () => {
+	let output = gen(`{{#hello foo={a,b} bar = { x, y:123 } }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{foo:{a,b},bar:{ x, y:123 }}`;
 	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
 });
 
