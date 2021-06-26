@@ -1,11 +1,25 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
-const INNER = /{[^}]*}|\[[^\]]*]|(['"`])[^'"`]*\1|\S+/g;
+const ARGS = /([a-zA-Z$_][^\s=]*)\s*=\s*((['"`])[^'"`]*\3|{[^}]*}|\[[^\]]*]|\S+)/g;
 const ESCAPE = /[&"<]/g, CHARS = {
 	'"': '&quot;',
 	'&': '&amp;',
 	'<': '&lt',
 };
+
+/**
+ * @param {string} input
+ * @returns {string|void}
+ */
+export function dict(input) {
+	let tmp, out=[];
+	while (tmp = ARGS.exec(input)) {
+		out.push(tmp[1] + ':' + tmp[2]);
+	}
+	if (out.length > 0) {
+		return '{' + out.join(',') + '}';
+	}
+}
 
 // $$1 = escape()
 // $$2 = extra blocks
@@ -70,11 +84,9 @@ export function gen(input, options) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else if (extra[action]) {
-				// parse arguments, allow implicit Array -> String
-				tmp = `$$2.${action}(${inner.length && inner.match(INNER) || []})`;
-				if (match[0].charAt(2) !== '{') {
-					tmp = '$$1(' + tmp + ')'; // not raw
-				}
+				// parse arguments, `defer=true` -> `{ defer: true }`
+				tmp = `$$2.${action}(${inner.length && dict(inner) || ''})`;
+				if (match[0].charAt(2) !== '{') tmp = '$$1(' + tmp + ')'; // not raw
 				wip += '${' + tmp + '}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
