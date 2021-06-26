@@ -372,23 +372,18 @@ blocks('should throw error on unknown block', () => {
 });
 
 blocks('should allow custom directives', () => {
-	let ran = false;
 	let tmpl = '{{#include "name" src=true }}';
 
 	let output = gen(tmpl, {
 		blocks: {
-			include(inner, full) {
-				ran = true;
-				assert.is(full, tmpl);
-				assert.is(inner, '"name" src=true');
-				return 'replacement;';
+			include() {
+				assert.unreachable('do not run function on parse');
 			}
 		}
 	});
 
-	assert.is(ran, true);
 	assert.type(output, 'string');
-	assert.is(output, 'var x="";replacement;return x');
+	assert.is(output, 'var x="";x+=`${$$1($$2.foo())};return x');
 });
 
 blocks('should ensure ";" after replacement', () => {
@@ -403,7 +398,8 @@ blocks('should ensure ";" after replacement', () => {
 	assert.is(output, 'var x="";bar;return x');
 });
 
-blocks('should omit block if no replacement', () => {
+// think no longer wanted / applicable
+blocks.skip('should omit block if no replacement', () => {
 	let output = gen('{{#var foo = 123}}{{#bar}}{{#baz}}{{#bat}}{{{ foo }}}', {
 		blocks: {
 			bar: () => '',
@@ -415,17 +411,40 @@ blocks('should omit block if no replacement', () => {
 	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
 });
 
-blocks.only('should allow functional replacement', () => {
-	let output = gen(`
-		{{#var mark = "?"}}
-		{{#hello "world" mark}}
-	`, {
+blocks('should allow functional replacement', () => {
+	let output = gen(`{{#hello "foo"}}`, {
 		blocks: {
-			hello: console.log
+			hello() {
+				assert.unreachable('do not call functions during parse');
+			}
 		}
 	});
 
-	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello("foo"))}`;return x');
+});
+
+blocks('should allow {{{ raw }}} function callers', () => {
+	let output = gen(`{{{#hello "foo"}}}`, {
+		blocks: {
+			hello() {
+				assert.unreachable('do not call functions during parse');
+			}
+		}
+	});
+
+	assert.is(output, 'var x="";x+=`${$$2.hello("foo")}`;return x');
+});
+
+blocks('should parse arguments for function callers', () => {
+	let output = gen(`{{#hello "foo" ["a b c", 123] "bar" { foo, bar } howdy}}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	assert.is(output, 'var x="";x+=`${$$1($$2.hello("foo",["a b c", 123],"bar",{ foo, bar },howdy))}`;return x');
 });
 
 blocks('should still throw on unknown block', () => {

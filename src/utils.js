@@ -1,5 +1,6 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
+const INNER = /{[^}]*}|\[[^\]]*]|(['"`])[^'"`]*\1|\S+/g;
 const ESCAPE = /[&"<]/g, CHARS = {
 	'"': '&quot;',
 	'&': '&amp;',
@@ -69,9 +70,8 @@ export function gen(input, options) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else if (extra[action]) {
-				// TODO: parse args
-				inner = JSON.stringify(inner);
-				tmp = `$$2.${action}(${inner});`
+				// parse arguments, allow implicit Array -> String
+				tmp = `$$2.${action}(${inner.length && inner.match(INNER) || []})`;
 				if (match[0].charAt(2) !== '{') {
 					tmp = '$$1(' + tmp + ')'; // not raw
 				}
