@@ -7,20 +7,6 @@ const ESCAPE = /[&"<]/g, CHARS = {
 	'<': '&lt',
 };
 
-/**
- * @param {string} input
- * @returns {string|void}
- */
-export function dict(input) {
-	let tmp, out=[];
-	while (tmp = ARGS.exec(input)) {
-		out.push(tmp[1] + ':' + tmp[2]);
-	}
-	if (out.length > 0) {
-		return '{' + out.join(',') + '}';
-	}
-}
-
 // $$1 = escape()
 // $$2 = extra blocks
 // $$3 = template values
@@ -84,9 +70,19 @@ export function gen(input, options) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else if (extra[action]) {
+				num = match[0].charAt(2) !== '{'; // not raw
 				// parse arguments, `defer=true` -> `{ defer: true }`
-				tmp = `$$2.${action}(${inner.length && dict(inner) || ''})`;
-				if (match[0].charAt(2) !== '{') tmp = '$$1(' + tmp + ')'; // not raw
+				// tmp = `$$2.${action}(${inner.length && dict(inner) || ''})`;
+				inner = inner.trim();
+				if (inner.length) {
+					tmp = [];
+					while (match = ARGS.exec(inner)) {
+						tmp.push(match[1] + ':' + match[2]);
+					}
+					inner = tmp.length ? '{' + tmp.join() + '}' : '';
+				}
+				tmp = `$$2.${action}(${inner})`;
+				if (num) tmp = '$$1(' + tmp + ')'; // not raw
 				wip += '${' + tmp + '}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
