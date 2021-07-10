@@ -70,16 +70,13 @@ export function gen(input, options) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else if (extra[action]) {
-				num = match[0].charAt(2) !== '{'; // not raw
 				if (inner.length) {
 					tmp = [];
 					// parse arguments, `defer=true` -> `{ defer: true }`
 					while (match = ARGS.exec(inner)) tmp.push(match[1] + ':' + match[2]);
 					inner = tmp.length ? '{' + tmp.join() + '}' : '';
 				}
-				tmp = `$$2.${action}(${inner})`;
-				if (num) tmp = '$$1(' + tmp + ')'; // not raw
-				wip += '${' + tmp + '}';
+				wip += '${$$2.' + action + '(' + inner + ')}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}
