@@ -4,6 +4,7 @@ node_modules
 *.lock
 *.log
 
-/dist
-/utils
+# generated
+/src/index.js
 /index.d.ts
+/dist

@@ -16,7 +16,7 @@
     "node": ">=10"
   },
   "scripts": {
-    "build": "bundt",
+    "build": "node bin && bundt",
     "test": "uvu -r esm -r module-alias/register test"
   },
   "files": [
@@ -29,24 +29,15 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./utils": {
-      "import": "./utils/index.mjs",
-      "require": "./utils/index.js"
-    },
     "./package.json": "./package.json"
   },
   "modes": {
-    "utils": "src/utils.js",
     "default": "src/index.js"
   },
   "keywords": [],
   "devDependencies": {
     "bundt": "1.1.5",
     "esm": "3.2.25",
-    "module-alias": "2.2.2",
     "uvu": "0.5.1"
-  },
-  "_moduleAliases": {
-    "tempura/utils": "src/utils.js"
   }
 }
