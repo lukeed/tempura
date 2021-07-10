@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "node bin && bundt",
-    "test": "uvu -r esm -r module-alias/register test"
+    "test": "uvu -r esm test"
   },
   "files": [
     "*.d.ts",
