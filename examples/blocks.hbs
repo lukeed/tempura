@@ -1,0 +1,15 @@
+{{#expect firstname, lastname, avatar }}
+
+{{#var list = ['oss', 'hiking', 'eating']; }}
+
+<section>
+	{{#h1 text="About Me" }}
+	<p>Welcome to my profile</p>
+	{{#include
+		src="basic.hbs" hobbies=list
+		firstname=firstname
+		lastname=lastname
+		avatar=avatar
+	}}
+	<p>Cya~!</p>
+</section>

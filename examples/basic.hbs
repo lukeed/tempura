@@ -1,0 +1,20 @@
+{{#expect firstname, lastname, avatar, hobbies }}
+
+{{! compute the fullname value once }}
+{{#var fullname = firstname + ' ' + lastname }}
+
+<figure>
+	<img src="{{ avatar }}" alt="{{{ fullname }}}"/>
+	<figcaption>{{ fullname }}</figcaption>
+</figure>
+
+{{#if hobbies && hobbies.length}}
+	<p>{{ fullname }} enjoys:</p>
+	<ul>
+		{{#each hobbies as hobby}}
+		<li>{{ hobby }}</li>
+		{{/each}}
+	</ul>
+{{#else}}
+	<p>{{ fullname }} has no hobbies, apparently</p>
+{{/if}}
