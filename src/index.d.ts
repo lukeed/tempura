@@ -5,6 +5,7 @@ export type Compiler = <T extends Record<string, any>> (data: T) => string;
 export interface Options {
 	props?: string[];
 	blocks?: Record<string, Block>;
+	async?: boolean;
 }
 
 export function esc<T=unknown>(value: T): T|string;

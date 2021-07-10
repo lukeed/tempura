@@ -71,7 +71,8 @@ export function gen(input, options) {
 					while (match = ARGS.exec(inner)) tmp.push(match[1] + ':' + match[2]);
 					inner = tmp.length ? '{' + tmp.join() + '}' : '';
 				}
-				wip += '${$$2.' + action + '(' + inner + ')}';
+				tmp = (options.async) ? 'await ' : '';
+				wip += '${' + tmp + '$$2.' + action + '(' + inner + ')}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}

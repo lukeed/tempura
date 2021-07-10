@@ -594,3 +594,29 @@ stack('unterminated #each block', () => {
 });
 
 stack.run();
+
+// ---
+
+const async = suite('async');
+
+async('should attach `await` keyword to custom blocks', () => {
+	let output = gen(`{{#foo x="hello" }} {{#bar y="world" }}`, {
+		async: true,
+		blocks: {
+			foo() {
+				// return
+			},
+			async bar() {
+				//
+			}
+		}
+	});
+
+	let expects = 'var x="";'
+	expects += 'x+=`${await $$2.foo({x:"hello"})} `;';
+	expects += 'x+=`${await $$2.bar({y:"world"})}`;return x';
+
+	assert.is(output, expects);
+});
+
+async.run();

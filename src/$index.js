@@ -18,7 +18,9 @@ export function esc(value) {
 }
 
 export function compile(input, options={}) {
-	return new Function('$$1', '$$2', '$$3', gen(input, options)).bind(0, options.escape || esc, options.blocks);
+	return new (options.async ? (async()=>{}).constructor : Function)(
+		'$$1', '$$2', '$$3', gen(input, options)
+	).bind(0, options.escape || esc, options.blocks);
 }
 
 export function transform(input, options={}) {
@@ -26,5 +28,7 @@ export function transform(input, options={}) {
 		options.format === 'cjs'
 		? 'var $$1=require("tempura").esc;module.exports='
 		: 'import{esc as $$1}from"tempura";export default '
+	) + (
+		options.async ? 'async ' : ''
 	) + 'function($$3,$$2){'+gen(input, options)+'}';
 }

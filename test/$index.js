@@ -28,11 +28,21 @@ transform('format :: ESM (default)', () => {
 	assert.ok(output.endsWith('}'), 'close function');
 });
 
+transform('format :: ESM :: async', () => {
+	let output = tempura.transform('', { async: true });
+	assert.match(output, ';export default async function($$3,$$2){');
+});
+
 transform('format :: CommonJS', () => {
 	let output = tempura.transform('', { format: 'cjs' });
 	assert.match(output, 'var $$1=require("tempura").esc;');
 	assert.match(output, ';module.exports=function($$3,$$2){');
 	assert.ok(output.endsWith('}'), 'close function');
+});
+
+transform('format :: CommonJS :: async', () => {
+	let output = tempura.transform('', { format: 'cjs', async: true });
+	assert.match(output, ';module.exports=async function($$3,$$2){');
 });
 
 transform('should bubble parsing errors', () => {
@@ -142,6 +152,44 @@ compile('should bubble parsing errors', () => {
 		assert.instance(err, Error);
 		assert.is(err.message, 'Unterminated "if" block');
 	}
+});
+
+compile('should create `async` function', async () => {
+	let delta;
+	let sleep = ms => new Promise(r => setTimeout(r, ms));
+	let normalize = x => x.replace(/[\r\n\t]+/g, '');
+
+	async function delay({ wait }) {
+		let x = Date.now();
+
+		await sleep(wait);
+		delta = Date.now() - x;
+		return `~> waited ${wait}ms!`;
+	}
+
+	let render = tempura.compile(`
+		{{#expect ms}}
+		{{#delay wait=ms }}
+	`, {
+		async: true,
+		blocks: { delay }
+	});
+
+	assert.instance(render, Function);
+	assert.instance(render, delay.constructor);
+
+	assert.is(
+		Object.prototype.toString.call(render),
+		'[object AsyncFunction]'
+	);
+
+	let foo = await render({ ms: 100 });
+	assert.is(normalize(foo), '~> waited 100ms!');
+	assert.ok(delta > 99 && delta < 110);
+
+	let bar = await render({ ms: 30 });
+	assert.is(normalize(bar), '~> waited 30ms!');
+	assert.ok(delta > 29 && delta < 35);
 });
 
 compile.run();
