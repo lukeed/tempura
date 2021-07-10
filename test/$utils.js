@@ -386,31 +386,6 @@ blocks('should allow custom directives', () => {
 	assert.is(output, 'var x="";x+=`${$$2.include({x:"name",src:true})}`;return x');
 });
 
-blocks.skip('should ensure ";" after replacement', () => {
-	let output = gen('{{#foo}}', {
-		blocks: {
-			foo() {
-				return 'bar';
-			}
-		}
-	});
-
-	assert.is(output, 'var x="";bar;return x');
-});
-
-// think no longer wanted / applicable
-blocks.skip('should omit block if no replacement', () => {
-	let output = gen('{{#var foo = 123}}{{#bar}}{{#baz}}{{#bat}}{{{ foo }}}', {
-		blocks: {
-			bar: () => '',
-			baz: () => false,
-			bat: () => 0,
-		}
-	});
-
-	assert.is(output, 'var x="";var foo=123;x+=`${foo}`;return x');
-});
-
 blocks('should allow functional replacement', () => {
 	let output = gen(`{{#hello "ignored"}}`, {
 		blocks: {
