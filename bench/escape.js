@@ -76,17 +76,16 @@ const compilers = {
 		</ul>
 	`),
 
-	'tempura': () => {
-		let tmpl = tempura.transform(`
-			{{#expect list}}
-			<ul>
-				{{#each list as item}}
-					<li>User: {{ item.user }} / Web Site: {{ item.site }}</li>
-				{{/each}}
-			</ul>
-		`);
-		return tempura.compile(tmpl);
-	},
+	'tempura': () => tempura.compile(`
+		{{#expect list}}
+		<ul>
+			{{#each list as item}}
+				<li>User: {{ item.user }} / Web Site: {{ item.site }}</li>
+			{{/each}}
+		</ul>
+	`, {
+		format: 'cjs'
+	}),
 };
 
 // runner('Compile', compilers, {
