@@ -7,4 +7,3 @@ export interface Options {
 }
 
 export function gen(input: string, options?: Options): string;
-export function esc<T=unknown>(value: T): T|string;

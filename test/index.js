@@ -15,22 +15,22 @@ transform('should return a string', () => {
 	assert.type(output, 'string');
 });
 
-transform('should include "esc" import via "tempura/utils" module', () => {
+transform('should include "esc" import via "tempura" module', () => {
 	let output = tempura.transform('');
 	assert.match(output, /\{esc(\:| as )/);
-	assert.match(output, '"tempura/utils"');
+	assert.match(output, '"tempura"');
 });
 
 transform('format :: ESM (default)', () => {
 	let output = tempura.transform('');
-	assert.match(output, 'import{esc as $$1}from"tempura/utils";');
+	assert.match(output, 'import{esc as $$1}from"tempura";');
 	assert.match(output, ';export default function($$3,$$2){');
 	assert.ok(output.endsWith('}'), 'close function');
 });
 
 transform('format :: CommonJS', () => {
 	let output = tempura.transform('', { format: 'cjs' });
-	assert.match(output, 'var{esc:$$1}=require("tempura/utils");');
+	assert.match(output, 'var $$1=require("tempura").esc;');
 	assert.match(output, ';module.exports=function($$3,$$2){');
 	assert.ok(output.endsWith('}'), 'close function');
 });
@@ -145,3 +145,73 @@ compile('should bubble parsing errors', () => {
 });
 
 compile.run();
+
+// ---
+
+const esc = suite('esc');
+
+esc('should be a function', () => {
+	assert.type(tempura.esc, 'function');
+});
+
+esc('should echo non-string inputs', () => {
+	// @ts-ignore
+	assert.is(tempura.esc(), undefined);
+	assert.is(tempura.esc(null), null);
+	assert.is(tempura.esc(false), false);
+	assert.is(tempura.esc(123), 123);
+	assert.is(tempura.esc(0), 0);
+
+	assert.equal(tempura.esc([1, 2, 3]), [1, 2, 3]);
+	assert.equal(tempura.esc({ foo: 1 }), { foo: 1 });
+});
+
+esc('should return string from string input', () => {
+	assert.type(tempura.esc(''), 'string');
+	assert.type(tempura.esc('foobar'), 'string');
+});
+
+esc('should escape `<` character', () => {
+	assert.is(
+		tempura.esc('here: <'),
+		'here: &lt'
+	);
+});
+
+esc('should escape `"` character', () => {
+	assert.is(
+		tempura.esc('here: "'),
+		'here: &quot;'
+	);
+});
+
+esc('should escape `&` character', () => {
+	assert.is(
+		tempura.esc('here: &'),
+		'here: &amp;'
+	);
+});
+
+esc('should escape all target characters in a string', () => {
+	assert.is(
+		tempura.esc('&&& <<< """'),
+		'&amp;&amp;&amp; &lt&lt&lt &quot;&quot;&quot;'
+	);
+});
+
+esc('should reset state on same input string', () => {
+	let input = '<foo>"hello"</foo>';
+
+	assert.is(
+		tempura.esc(input),
+		'&ltfoo>&quot;hello&quot;&lt/foo>'
+	);
+
+	assert.is(
+		tempura.esc(input),
+		'&ltfoo>&quot;hello&quot;&lt/foo>',
+		'~> repeat'
+	);
+});
+
+esc.run();

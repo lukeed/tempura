@@ -1,11 +1,6 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
 const ARGS = /([a-zA-Z$_][^\s=]*)\s*=\s*((["`'])(?:(?=(\\?))\4.)*?\3|{[^}]*}|\[[^\]]*]|\S+)/g;
-const ESCAPE = /[&"<]/g, CHARS = {
-	'"': '&quot;',
-	'&': '&amp;',
-	'<': '&lt',
-};
 
 // $$1 = escape()
 // $$2 = extra blocks
@@ -105,15 +100,4 @@ export function gen(input, options) {
 
 	tmp = initials.size ? `{${ [...initials].join() }}=$$3,x` : ' x';
 	return `var${tmp + txt}return x`;
-}
-
-export function esc(value) {
-	if (typeof value !== 'string') return value;
-	let last=ESCAPE.lastIndex=0, tmp=0, out='';
-	while (ESCAPE.test(value)) {
-		tmp = ESCAPE.lastIndex - 1;
-		out += value.substring(last, tmp) + CHARS[value[tmp]];
-		last = tmp + 1;
-	}
-	return out + value.substring(last);
 }
