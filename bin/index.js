@@ -9,8 +9,8 @@ const fs = require('fs/promises');
 		fs.readFile(join(src, '$index.js'), 'utf8'),
 	]);
 
-	$utils = $utils.replace('export function', 'function');
-	$index = $index.replace(/import.*(?:\n)/, $utils);
+	$utils = $utils.replace('export function', 'function').replace(/\$/g, '\0');
+	$index = $index.replace(/^import.*(?:\n)/m, $utils).replace(/\0/g, '$$');
 
 	console.log('~> creating "src/index.js" placeholder');
 	await fs.writeFile(join(src, 'index.js'), $index);
