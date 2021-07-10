@@ -383,7 +383,7 @@ blocks('should allow custom directives', () => {
 	});
 
 	assert.type(output, 'string');
-	assert.is(output, 'var x="";x+=`${$$1($$2.include({x:"name",src:true}))}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.include({x:"name",src:true})}`;return x');
 });
 
 blocks.skip('should ensure ";" after replacement', () => {
@@ -420,7 +420,7 @@ blocks('should allow functional replacement', () => {
 		}
 	});
 
-	assert.is(output, 'var x="";x+=`${$$1($$2.hello())}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.hello()}`;return x');
 });
 
 blocks('should allow {{{ raw }}} function callers', () => {
@@ -445,7 +445,7 @@ blocks('should parse arguments for function callers', () => {
 	});
 
 	let args = `{foo:"foo",arr:["a b c", 123],bar:'bar',o:{ foo, bar },hi:howdy}`;
-	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.hello(' + args + ')}`;return x');
 });
 
 blocks('arguments parsing : strings', () => {
@@ -458,7 +458,7 @@ blocks('arguments parsing : strings', () => {
 	});
 
 	let args = `{foo:"foo",bar:'bar',baz:\`baz\`,hello:"foo 'bar' baz"}`;
-	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.hello(' + args + ')}`;return x');
 });
 
 blocks('arguments parsing : booleans', () => {
@@ -471,7 +471,7 @@ blocks('arguments parsing : booleans', () => {
 	});
 
 	let args = `{foo:true,bar:true,baz:false,hello:false}`;
-	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.hello(' + args + ')}`;return x');
 });
 
 blocks('arguments parsing : arrays', () => {
@@ -484,7 +484,7 @@ blocks('arguments parsing : arrays', () => {
 	});
 
 	let args = `{foo:[1,2,3],bar:[1, 2,  3],baz:['foo','baz']}`;
-	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.hello(' + args + ')}`;return x');
 });
 
 blocks('arguments parsing : objects', () => {
@@ -497,7 +497,7 @@ blocks('arguments parsing : objects', () => {
 	});
 
 	let args = `{foo:{a,b},bar:{ x, y:123 }}`;
-	assert.is(output, 'var x="";x+=`${$$1($$2.hello(' + args + '))}`;return x');
+	assert.is(output, 'var x="";x+=`${$$2.hello(' + args + ')}`;return x');
 });
 
 blocks('should still throw on unknown block', () => {
