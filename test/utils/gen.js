@@ -514,6 +514,32 @@ blocks('should still throw on unknown block', () => {
 	}
 });
 
+blocks('should allow multi-line arguments', () => {
+	let blocks = { script: 1 };
+
+	let output = gen(
+		`{{#script
+			type="module"
+			src="foobar.mjs"
+			async=true
+		}}`,
+		{ blocks }
+	);
+
+	let expects = 'var x="";x+=`${$$2.script({type:"module",src:"foobar.mjs",async:true})}`;return x';
+	assert.is(output, expects);
+
+	output = gen(
+		`{{#script
+			type="module"
+			src="foobar.mjs"
+			async=true }}`,
+		{ blocks }
+	);
+
+	assert.is(output, expects);
+});
+
 blocks.run();
 
 // ---
