@@ -1,10 +1,10 @@
-import * as utils from 'tempura/utils';
-
 const ESCAPE = /[&"<]/g, CHARS = {
 	'"': '&quot;',
 	'&': '&amp;',
 	'<': '&lt',
 };
+
+import { gen } from './$utils';
 
 export function esc(value) {
 	if (typeof value !== 'string') return value;
@@ -18,7 +18,7 @@ export function esc(value) {
 }
 
 export function compile(input, options={}) {
-	return new Function('$$1', '$$2', '$$3', utils.gen(input, options)).bind(0, options.escape || esc, options.blocks);
+	return new Function('$$1', '$$2', '$$3', gen(input, options)).bind(0, options.escape || esc, options.blocks);
 }
 
 export function transform(input, options={}) {
@@ -26,5 +26,5 @@ export function transform(input, options={}) {
 		options.format === 'cjs'
 		? 'var $$1=require("tempura").esc;module.exports='
 		: 'import{esc as $$1}from"tempura";export default '
-	) + 'function($$3,$$2){'+utils.gen(input, options)+'}';
+	) + 'function($$3,$$2){'+gen(input, options)+'}';
 }
