@@ -65,14 +65,15 @@ export function gen(input, options) {
 			} else if (action === 'else') {
 				txt += `}else{`;
 			} else if (extra[action]) {
-				if (inner.length) {
+				if (inner) {
 					tmp = [];
 					// parse arguments, `defer=true` -> `{ defer: true }`
 					while (match = ARGS.exec(inner)) tmp.push(match[1] + ':' + match[2]);
 					inner = tmp.length ? '{' + tmp.join() + '}' : '';
 				}
-				tmp = (options.async) ? 'await ' : '';
-				wip += '${' + tmp + '$$2.' + action + '(' + inner + ')}';
+				inner = inner || '{}';
+				tmp = options.async ? 'await ' : '';
+				wip += '${' + tmp + '$$2.' + action + '(' + inner + ',$$2)}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}
