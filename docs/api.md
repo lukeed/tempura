@@ -51,7 +51,7 @@ The template to be converted.
 
 #### options
 
-All common [Options](#options) are supported, in addition to:
+All common [Options](#options-2) are supported, in addition to:
 
 #### options.escape
 Type: `(value: any) => string`
@@ -59,7 +59,7 @@ Default: `typeof tempura.esc`
 
 The escape function to use for `{{{ raw }}}` values.
 
-When unspecified, [`tempura.esc`](#TODO) is used by default;
+When unspecified, [`tempura.esc`](#tempuraescvalue) is used by default;
 
 
 ### tempura.transform(input, options?)
@@ -67,7 +67,7 @@ Returns: `string`
 
 Transforms the `input` source template into a string-representation of the equivalent JavaScript function.
 
-Unlike [`tempura.compile`](#TODO), this generates a `string` instead of a `function`, which makes this method suitable for bundler transformations and/or replacing code at build-time.
+Unlike [`tempura.compile`](#tempuracompileinput-options), this generates a `string` instead of a `function`, which makes this method suitable for bundler transformations and/or replacing code at build-time.
 
 ```js
 let template = `
@@ -93,7 +93,7 @@ The template to be converted.
 
 #### options
 
-All common [Options](#options) are supported, in addition to:
+All common [Options](#options-2) are supported, in addition to:
 
 #### options.format
 Type: `"esm"` or `"cjs"`<br>

@@ -2,15 +2,16 @@
 
 > A quick cheatsheet of the tempura template syntax.
 
-The tempura template syntax is _very similar_ to the [Handlebars](https://handlebarsjs.com/guide/) or [Mustache](https://mustache.github.io/#demo) template syntax. In fact, they're more similar than they are different!
+The tempura template syntax is _very similar_ to the [Handlebars](https://handlebarsjs.com/guide/) or [Mustache](https://mustache.github.io/#demo) template syntax. <br>In fact, they're more similar than they are different!
 
+> **General Notice**
+> Throughout this document, you'll notice that most examples include HTML tags or _produce_ HTML output. This is done only because HTML is a common target. Tempura templates ***do not*** need to use or produce HTML content – it only cares about its own template syntax!
 
 ## Overview
 
 Templates are (hopefully!) an easier way to write and maintain view logic. Nearly all template engines, including `tempura`, parse your template files and generate a function (per template) that includes all your view logic and desired output.
 
 Each of these functions is valid JavaScript and is waiting to accept an `input` object. Together, the input data and the render function produce the expected output.
-
 
 ## Expressions
 
@@ -22,13 +23,13 @@ When the template is evaluated, these expressions are replaced. For example:
 <p>Hello, {{ name }}!</p>
 ```
 
-When rendered with the input:
+rendered with the input:
 
 ```js
 { name: 'world' }
 ```
 
-The the result is:
+produces the result:
 
 ```html
 <p>Hello, world!</p>
@@ -62,7 +63,7 @@ By default, all expressions are HTML-escaped. For example, if the value contains
 
 > **Note:** The HTML-escape function can be customized via the [`escape`](/docs/api.md#optionsescape) option.
 
-It's generally recommended to use HTML-escaping unless you're certain that the expression's value does not contain any HTML characters; eg, it's a number or you just constructed it via [`#var`](#TODO).
+It's generally recommended to use HTML-escaping unless you're certain that the expression's value does not contain any HTML characters; eg, it's a number or you just constructed it via [`#var`](#var).
 
 ### Raw Values
 
@@ -85,7 +86,9 @@ raw: a & b " c < d
 
 ## Comments
 
-It's generally recommended to include comments within your templates, especially as their complexity grows! Template comments will never appear in the rendered output. However, HTML comments are kept.
+It's generally recommended to include comments within your templates, especially as their complexity grows!
+
+Template comments will never appear in the rendered output. However, HTML comments are kept.
 
 ```hbs
 <!-- HTML comments are kept in output -->
@@ -146,7 +149,7 @@ Your control flow helpers!
 
 Just like JavaScript, use of `#elif` (short for `else if`) and `#else` are optional, but must always be associated with and follow an `#if` opener. Parenthesis around the `#if` and `#elif` conditions are optional:
 
-All `#if` blocks must be terminated by a `/if` block.
+All `#if` blocks must be terminated by an `/if` block.
 
 ```hbs
 {{#expect age, isActive}}
@@ -178,7 +181,7 @@ All `#if` blocks must be terminated by a `/if` block.
 
 The `#each` block loops over an Array, passing through each value and index to the template expression(s) within the block.
 
-All `#each` blocks must be terminated by a `/each` block.
+All `#each` blocks must be terminated by an `/each` block.
 
 ```hbs
 {{#expect items}}
