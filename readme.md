@@ -22,7 +22,7 @@
 ## Features
 
 * **Extremely lightweight**<br>
-  _Everything is `1.25 kB` (gzip) – even less with tree-shaking!_
+  _Everything is `1.22 kB` (gzip) – even less with tree-shaking!_
 
 * **Super Performant**<br>
   _Significantly [faster](#benchmarks) than the big names; and the small ones._
@@ -31,7 +31,7 @@
   _Tempura templates look great with Handlebars syntax highlighting._
 
 * **Custom Directives**<br>
-  _Easily define custom directives, via the [API](#API), to extend functionality._
+  _Easily define [custom blocks](/docs/blocks.md), via the [API](/docs/api.md), to extend functionality._
 
 ## Install
 
@@ -41,66 +41,94 @@ $ npm install --save tempura
 
 ## Usage
 
+> Visit the [`/examples`](/examples) and [Syntax Cheatsheet](/docs/syntax.md) for more info!
+
+***example.hbs***
+
+```hbs
+{{! expected props to receive }}
+{{#expect title, items }}
+
+{{! inline variables }}
+{{#var count = items.length }}
+{{#var suffix = count === 1 ? 'task' : 'tasks' }}
+
+{{#if count == 0}}
+  <p>You're done! 🎉</p>
+{{#else}}
+  <p>You have {{{ count }}} {{{ suffix }}} remaining!</p>
+
+  {{#if count == 1}}
+    <small>Almost there!</small>
+  {{#elif count > 10}}
+    <small>... you must be <em>fried</em> 😔</small>
+  {{#else}}
+    <small>You've got this 💪🏼</small>
+  {{/if}}
+
+  <ul>
+    {{#each items as todo}}
+      <li>{{ todo.text }}</li>
+    {{/each}}
+  </ul>
+{{/if}}
+```
+
+***render.js***
+
 ```js
-// TODO
+import { readFile } from 'fs/promises';
+import { transform, compile } from 'tempura';
+
+const template = await readFile('example.hbs', 'utf8');
+
+// Transform the template into a function
+// NOTE: Produces a string; ideal for build/bundlers
+// ---
+
+let toESM = transform(template);
+console.log(typeof toESM); //=> "string"
+console.log(toESM);
+//=> `import{esc as $$1}from"tempura";export default function($$3,$$2){...}`
+
+let toCJS = transform(template, { format: 'cjs' });
+console.log(typeof toCJS); //=> "string"
+console.log(toCJS);
+//=> `var $$1=require("tempura").esc;module.exports=function($$3,$$2){...}`
+
+
+// Convert the template into a live function
+// NOTE: Produces a `Function`; ideal for runtime/servers
+// ---
+
+let render = compile(template);
+console.log(typeof render); //=> "function"
+render({
+  title: 'Reminders',
+  items: [
+    { id: 1, text: 'Feed the doggo' },
+    { id: 2, text: 'Buy groceries' },
+    { id: 3, text: 'Exercise, ok' },
+  ]
+});
+//=> "<p>You have 3 tasks remaining!</p>\n"
+//=> + "<small>You've got this 💪🏼</small>\n\n"
+//=> + "<ul>\n"
+//=> + "  <li>Feed the doggo</li>\n"
+//=> + "  <li>Buy groceries</li>\n"
+//=> + "  <li>Exercise, ok</li>\n"
+//=> + "</ul>"
 ```
 
 ## Syntax
 
-TODO
+Please refer to the [Syntax Cheatsheet](/docs/syntax.md).
+
 
 ## API
 
-> **Note:** All methods share common [Options](#options).
+Visit the [API](/docs/api.md) and [Custom Blocks](/docs/blocks.md) for documentation.
 
-### tempura.compile(input, options?)
-Returns: `(data: object) => string`
-
-Convert a template into an executable `function` equivalent.
-
-This function will produce a `string` output based on the data you provide. The `data` key names should match the `#expect`ed variable names.
-
-#### input
-Type: `string`
-
-The template to be converted.
-
-#### options.escape
-Type: `(value: any) => string`
-
-todo
-
-### tempura.transform(input, options?)
-Returns: `string`
-
-Transforms the `input` source template into JavaScript code. Unlike `tempura.compile()`, this generates a `string` instead of a `function`, which means that this method is likely only suitable for generating and/or replacing code at build-time.
-
-#### input
-Type: `string`
-
-The template to be converted.
-
-#### options.format
-Type: `"esm"` or `"cjs"`<br>
-Default: `"esm"`
-
-Modify the generated output to be compliant with the CommonJS or ES Module format.
-
-> **Note:** Most bundlers and/or upstream consumers can understand (and prefer) the ESM format.
-
-## Options
-
-#### options.props
-Type: `string[]`
-
-The _names_ of variables that will be provided to a view.
-
-> **NOTE:** Declaring `options.props` names _could_ take the place of `{{#expect ...}}` declarataions – and vice versa. In other words, `options.props` is a programmatic way to define (or skip) `{{#expect}}` blocks. Declaring a variable name in both locations has no effect.
-
-#### options.blocks
-Type: `{ ... }`
-
-TODO: extra actions/blocks
 
 ## Benchmarks
 
@@ -108,7 +136,7 @@ TODO: extra actions/blocks
 
 Please visit the [`/bench`](/bench) directory for complete, reproducible benchmarks.
 
-The following is a subset of the full results, presented without context. Again, please visit [`/bench`](/bench) for explanations and/or comparisons.
+The following is a subset of the full results, presented without context. Again, please visit [`/bench`](/bench) for explanations, comparisons, and/or differences.
 
 ```
 Benchmark: Render w/ raw values (no escape)
