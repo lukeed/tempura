@@ -2,7 +2,7 @@
   "name": "tempura",
   "version": "0.1.0-next.2",
   "repository": "lukeed/tempura",
-  "description": "WIP",
+  "description": "A light, crispy, and delicious template engine",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
   "types": "index.d.ts",
@@ -21,7 +21,6 @@
   },
   "files": [
     "*.d.ts",
-    "utils",
     "dist"
   ],
   "exports": {
@@ -34,7 +33,14 @@
   "modes": {
     "default": "src/index.js"
   },
-  "keywords": [],
+  "keywords": [
+    "engine",
+    "mustache",
+    "handlebars",
+    "template",
+    "html",
+    "hbs"
+  ],
   "devDependencies": {
     "bundt": "1.1.5",
     "esm": "3.2.25",
