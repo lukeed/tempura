@@ -21,6 +21,7 @@
   },
   "files": [
     "*.d.ts",
+    "esbuild",
     "dist"
   ],
   "exports": {
@@ -28,10 +29,15 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./esbuild": {
+      "import": "./esbuild/index.mjs",
+      "require": "./esbuild/index.js"
+    },
     "./package.json": "./package.json"
   },
   "modes": {
-    "default": "src/index.js"
+    "default": "src/index.js",
+    "esbuild": "src/esbuild.js"
   },
   "keywords": [
     "engine",
