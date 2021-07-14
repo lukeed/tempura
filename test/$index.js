@@ -192,6 +192,67 @@ compile('should create `async` function', async () => {
 	assert.ok(delta > 29 && delta < 35);
 });
 
+compile('should allow `blocks` to call other blocks', () => {
+	let blocks = {
+		hello(args, blocks) {
+			let output = `<h>"${args.name}"</h>`;
+			// Always invoke the `foo` block
+			output += blocks.foo({ value: 123  });
+			// Calls itself; recursive block
+			if (args.other) output += blocks.hello({ name: args.other }, blocks);
+			return output;
+		},
+		foo(args) {
+			return `<foo>${args.value}</foo>`;
+		}
+	};
+
+	let render = tempura.compile('{{#hello name="world" other="there"}}', { blocks });
+
+	assert.is(
+		render(),
+		`<h>"world"</h><foo>123</foo><h>"there"</h><foo>123</foo>`
+	);
+});
+
+compile('should allow `Compiler` output as blocks', () => {
+	let blocks = {
+		// initialize foo
+		// ~> does NOT use custom blocks
+		foo: tempura.compile(`
+			{{#expect age}}
+			{{#if age > 100}}
+				<p>centurion</p>
+			{{#else}}
+				<p>youngin</p>
+			{{/if}}
+		`),
+
+		// initial hello
+		// ~> placeholder; because self-references
+		hello: null,
+	};
+
+	blocks.hello = tempura.compile(`
+		{{#expect name, other}}
+
+		<h>"{{ name }}"</h>
+		{{#foo age=123}}
+
+		{{#if other}}
+			{{#hello name=other}}
+		{{/if}}
+	`,  { blocks });
+
+	let normalize = x => x.replace(/[\r\n\t]+/g, '');
+	let render = tempura.compile('{{#hello name="world" other="there"}}', { blocks });
+
+	assert.is(
+		normalize(render()),
+		`<h>"world"</h><p>centurion</p><h>"there"</h><p>centurion</p>`
+	);
+});
+
 compile.run();
 
 // ---

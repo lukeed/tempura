@@ -64,7 +64,7 @@ export function gen(input, options) {
 				txt += `}else if(${inner}){`;
 			} else if (action === 'else') {
 				txt += `}else{`;
-			} else if (extra[action]) {
+			} else if (action in extra) {
 				if (inner) {
 					tmp = [];
 					// parse arguments, `defer=true` -> `{ defer: true }`
