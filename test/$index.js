@@ -70,6 +70,11 @@ compile('should return a function', () => {
 	assert.type(output, 'function');
 });
 
+compile('should perform basic variable replacement.', () => {
+	let output = tempura.compile('Hello, {{name}}');
+	assert.is(output({name: 'world'}), 'Hello, world');
+});
+
 compile('should produce valid output :: raw', () => {
 	let output = tempura.compile(`
 		{{#expect value}}
