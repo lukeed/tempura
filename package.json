@@ -22,6 +22,7 @@
   "files": [
     "*.d.ts",
     "esbuild",
+    "rollup",
     "dist"
   ],
   "exports": {
@@ -33,11 +34,16 @@
       "import": "./esbuild/index.mjs",
       "require": "./esbuild/index.js"
     },
+    "./rollup": {
+      "import": "./rollup/index.mjs",
+      "require": "./rollup/index.js"
+    },
     "./package.json": "./package.json"
   },
   "modes": {
     "default": "src/index.js",
-    "esbuild": "src/esbuild.js"
+    "esbuild": "src/esbuild.js",
+    "rollup": "src/rollup.js"
   },
   "keywords": [
     "engine",
