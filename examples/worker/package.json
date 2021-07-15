@@ -8,6 +8,6 @@
     "@rollup/plugin-node-resolve": "13.0.0",
     "esbuild": "0.12.15",
     "rollup": "2.53.1",
-    "tempura": "0.1.0"
+    "tempura": "0.2.0"
   }
 }
