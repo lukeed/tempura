@@ -1,0 +1,31 @@
+{{#expect items}}
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<title>tempura | Demo: TODOs</title>
+		<meta name="description" content="An example using tempura in a Cloudlare Worker with esbuild or Rollup"/>
+		<style>
+			li {
+				line-height: 1.5;
+			}
+			li.done {
+				text-decoration: line-through;
+				opacity: 0.5;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>TODOs</h1>
+		<ul>
+			{{#if items.length > 0}}
+				{{#each items as item}}
+					<li{{#if item.completed}} class="done"{{/if}}>
+						<em>({{{ item.id }}})</em> {{ item.title }}
+					</li>
+				{{/each}}
+			{{#else}}
+				<li>No TODO items! 🎉</li>
+			{{/if}}
+		</ul>
+	</body>
+</html>
