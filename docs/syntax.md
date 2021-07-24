@@ -20,6 +20,7 @@ Values can be printed by wrapping content with the `{{` and `}}` characters. The
 When the template is evaluated, these expressions are replaced. For example:
 
 ```hbs
+{{#expect name}}
 <p>Hello, {{ name }}!</p>
 ```
 
