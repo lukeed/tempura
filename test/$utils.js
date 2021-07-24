@@ -359,6 +359,23 @@ each.run();
 
 // ---
 
+const loose = suite('options.loose');
+
+loose('should not declare unknown vars by default', () => {
+	let output = gen('{{ hello }}');
+	assert.is(output, 'var x=`${$$1(hello)}`;return x');
+});
+
+loose('should preprare surprise vars', () => {
+	let output = gen('{{ hello }}', { loose: true });
+	assert.is(output, 'var{hello}=$$3,x=`${$$1(hello)}`;return x');
+
+});
+
+loose.run();
+
+// ---
+
 const blocks = suite('options.blocks');
 
 blocks('should throw error on unknown block', () => {

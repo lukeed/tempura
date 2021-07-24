@@ -83,10 +83,10 @@ export function gen(input, options) {
 			close();
 			if (action === inner) txt += '}';
 			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
-		} else if (match[0].charAt(2) === '{') {
-			wip += '${' + inner + '}'; // {{{ raw }}}
 		} else {
-			wip += '${$$1(' + inner + ')}';
+			if (options.loose) initials.add(inner);
+			if (match[0].charAt(2) === '{') wip += '${' + inner + '}'; // {{{ raw }}}
+			else wip += '${$$1(' + inner + ')}';
 		}
 	}
 

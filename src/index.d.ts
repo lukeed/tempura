@@ -3,6 +3,7 @@ export type Blocks = Record<string, Compiler>;
 export type Compiler = <T extends Args> (data?: T, blocks?: Blocks) => Promise<string>|string;
 
 export interface Options {
+	loose?: boolean;
 	props?: string[];
 	blocks?: Blocks;
 	async?: boolean;
