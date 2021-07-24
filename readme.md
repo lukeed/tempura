@@ -22,7 +22,7 @@
 ## Features
 
 * **Extremely lightweight**<br>
-  _Everything is `1.23 kB` (gzip) – even less with tree-shaking!_
+  _Everything is `1.26 kB` (gzip) – even less with tree-shaking!_
 
 * **Super Performant**<br>
   _Significantly [faster](#benchmarks) than the big names; and the small ones._
