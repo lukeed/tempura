@@ -129,7 +129,7 @@ It is recommended that you include global and/or shared variables within `option
 Type: `boolean`<br>
 Default: `false`
 
-By default, any template variables must be known ahead of time – either through [`options.props`](/docs/api.md#optionsprops) or through [`#expect`](/docs/syntax.md#expect) declarations. However, when enabled, `options.loose` relaxes this contraint.
+By default, any template variables must be known ahead of time – either through [`options.props`](/docs/api.md#optionsprops) or through [`#expect`](/docs/syntax.md#expect) declarations. However, when enabled, `options.loose` relaxes this constraint.
 
 > **Note:** Enabling `options.loose` makes for a more Handlebars-like experience.
 
