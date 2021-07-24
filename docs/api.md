@@ -122,7 +122,23 @@ Declaring `props` names means that they don't have to appear within any `{{#expe
 
 It is recommended that you include global and/or shared variables within `options.props`, which saves you the trouble of writing the same `{{#expect foo, bar}}` statements over and over. This way, each template can `{{#expect}}` any variables that are unique to it.
 
-> **Note:** Variable names are deduped. For exmaple, defining `{{#expect foo}}` _and_ `options.props: ['foo']` will not have any adverse/duplicative effects.
+> **Note:** Variable names are deduped. For example, defining `{{#expect foo}}` _and_ `options.props: ['foo']` will not have any adverse/duplicative effects.
+
+
+### options.loose
+Type: `boolean`<br>
+Default: `false`
+
+By default, any template variables must be known ahead of time – either through [`options.props`](/docs/api.md#optionsprops) or through [`#expect`](/docs/syntax.md#expect) declarations. However, when enabled, `options.loose` relaxes this contraint.
+
+> **Note:** Enabling `options.loose` makes for a more Handlebars-like experience.
+
+With this option activated, removing the `#expect` declaration from the example below will produce the same output:
+
+```diff
+--{{#expect name}}
+<p>Hello, {{ name }}!</p>
+```
 
 
 ### options.blocks
