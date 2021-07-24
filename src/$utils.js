@@ -1,5 +1,6 @@
 const ENDLINES = /[\r\n]+$/g;
 const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
+const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const ARGS = /([a-zA-Z$_][^\s=]*)\s*=\s*((["`'])(?:(?=(\\?))\4.)*?\3|{[^}]*}|\[[^\]]*]|\S+)/g;
 
 // $$1 = escape()
@@ -84,9 +85,13 @@ export function gen(input, options) {
 			if (action === inner) txt += '}';
 			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
 		} else {
-			if (options.loose) initials.add(inner);
 			if (match[0].charAt(2) === '{') wip += '${' + inner + '}'; // {{{ raw }}}
 			else wip += '${$$1(' + inner + ')}';
+			if (options.loose) {
+				while (tmp = VAR.exec(inner)) {
+					initials.add(tmp[1]);
+				}
+			}
 		}
 	}
 

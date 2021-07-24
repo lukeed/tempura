@@ -366,10 +366,26 @@ loose('should not declare unknown vars by default', () => {
 	assert.is(output, 'var x=`${$$1(hello)}`;return x');
 });
 
-loose('should preprare surprise vars', () => {
-	let output = gen('{{ hello }}', { loose: true });
-	assert.is(output, 'var{hello}=$$3,x=`${$$1(hello)}`;return x');
+loose('should prepare surprise vars', () => {
+	let foo = gen('{{ hello }}', { loose: true });
+	assert.is(foo, 'var{hello}=$$3,x=`${$$1(hello)}`;return x');
 
+	let bar = gen('{{{ hello+world }}}', { loose: true });
+	assert.is(bar, 'var{hello,world}=$$3,x=`${hello+world}`;return x');
+
+	let baz = gen('{{{ hello / world }}}', { loose: true });
+	assert.is(baz, 'var{hello,world}=$$3,x=`${hello / world}`;return x');
+});
+
+loose('should ignore non-identifiers', () => {
+	let foo = gen('{{{ "123" }}}', { loose: true });
+	assert.is(foo, 'var x=`${"123"}`;return x');
+
+	let bar = gen('{{{ 123 }}}', { loose: true });
+	assert.is(bar, 'var x=`${123}`;return x');
+
+	let baz = gen('{{{ hello == 123 }}}', { loose: true });
+	assert.is(baz, 'var{hello}=$$3,x=`${hello == 123}`;return x');
 });
 
 loose.run();
