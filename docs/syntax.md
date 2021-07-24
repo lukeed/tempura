@@ -126,6 +126,11 @@ You may declare multiple variables within the same `#expect` block. You may also
     title, todos }}
 ```
 
+In this snippet, the rest of the template file may safely use the `name`, `foo`, `bar`, `hello`, `title`, and `todos` variables. If any of these variables had been referenced _without_ being declared (either thru `#expect` or `options.props`), then a `ReferenceError` error would have been thrown at runtime.
+
+This is because tempura prefers to be strict by default. If, however, you would prefer to relax this condition, you may enable the [`loose`](/docs/api.md#optionsloose) option during any `tempura.compile` or `tempura.transform` calls.
+
+
 ### `#var`
 
 You may define new variables within your template and reference them throughout the file. Normal JavaScript scoping rules apply.
