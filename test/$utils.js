@@ -552,6 +552,30 @@ blocks.run();
 
 // ---
 
+const props = suite('options.props');
+
+props('should take the place of `#expect` decls', () => {
+	let foo = gen('{{ url }}', { props: ['url'] });
+	assert.is(foo, 'var{url}=$$3,x=`${$$1(url)}`;return x');
+
+	let bar = gen('{{{ a + b }}}', { props: ['a', 'b'] });
+	assert.is(bar, 'var{a,b}=$$3,x=`${a + b}`;return x');
+});
+
+props('should dedupe with `#expect` repeats', () => {
+	let foo = gen('{{#expect foo}}{{{ foo }}}', { props: ['foo'] });
+	assert.is(foo, 'var{foo}=$$3,x="";x+=`${foo}`;return x');
+});
+
+props('should work with `loose` enabled', () => {
+	let foo = gen('{{{ foo }}}', { props: ['bar'], loose: true });
+	assert.is(foo, 'var{bar,foo}=$$3,x=`${foo}`;return x');
+});
+
+props.run();
+
+// ---
+
 const stack = suite('stack');
 
 stack('should throw on incorrect block order :: if->each', () => {
