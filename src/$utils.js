@@ -105,6 +105,6 @@ export function gen(input, options) {
 
 	close();
 
-	tmp = initials.size ? `{${ [...initials].join() }}=$$3,x` : ' x';
+	tmp = initials.size ? `{${ Array.from(initials).join() }}=$$3,x` : ' x';
 	return `var${tmp + txt}return x`;
 }
