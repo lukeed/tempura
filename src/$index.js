@@ -7,7 +7,7 @@ const ESCAPE = /[&"<]/g, CHARS = {
 import { gen } from './$utils';
 
 export function esc(value) {
-	if (typeof value !== 'string') return value;
+	value = (value == null) ? '' : '' + value;
 	let last=ESCAPE.lastIndex=0, tmp=0, out='';
 	while (ESCAPE.test(value)) {
 		tmp = ESCAPE.lastIndex - 1;

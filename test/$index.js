@@ -263,16 +263,21 @@ esc('should be a function', () => {
 	assert.type(tempura.esc, 'function');
 });
 
-esc('should echo non-string inputs', () => {
-	// @ts-ignore
-	assert.is(tempura.esc(), undefined);
-	assert.is(tempura.esc(null), null);
-	assert.is(tempura.esc(false), false);
-	assert.is(tempura.esc(123), 123);
-	assert.is(tempura.esc(0), 0);
+esc('should convert non-string inputs to string', () => {
+	assert.is(tempura.esc(), '');
+	assert.is(tempura.esc(null), '');
 
-	assert.equal(tempura.esc([1, 2, 3]), [1, 2, 3]);
-	assert.equal(tempura.esc({ foo: 1 }), { foo: 1 });
+	assert.is(tempura.esc(false), 'false');
+	assert.is(tempura.esc(123), '123');
+	assert.is(tempura.esc(0), '0');
+
+	assert.equal(tempura.esc([1, 2, 3]), '1,2,3');
+	assert.equal(tempura.esc({ foo: 1 }), '[object Object]');
+});
+
+esc('should prevent xss scripting in array', () => {
+	let output = tempura.esc(['<img src=x onerror="alert(1)" />']);
+	assert.is(output, '&ltimg src=x onerror=&quot;alert(1)&quot; />');
 });
 
 esc('should return string from string input', () => {

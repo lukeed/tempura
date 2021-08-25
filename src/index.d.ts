@@ -12,7 +12,7 @@ export interface Options {
 	async?: boolean;
 }
 
-export function esc<T=unknown>(value: T): T|string;
+export function esc(value: string|unknown): string;
 export function transform(input: string, options?: Options & { format?: 'esm' | 'cjs' }): string;
 
 type CompileOptions = Options & { escape?: typeof esc };

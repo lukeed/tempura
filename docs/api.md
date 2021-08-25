@@ -6,14 +6,18 @@
 
 
 ### tempura.esc(value)
-Returns: `string` or `typeof value`
+Returns: `string`
 
 #### value
 Type: `string` or `unknown`
 
 The value to be HTML-escaped. The following special characters are escaped: `"`, `&`, and `<`.
 
-> **Note:** Any non-`string` values are returned as is.
+> **Note:** Any non-`string` values are coerced to a strings!
+>  * `null` and `undefined` become `""`
+>  * `{ foo: 123 }` becomes `"[object Object]"`
+>  * `[1, 2, 3]` becomes `"1,2,3"`
+>  * `123` becomes `"123"`
 
 
 ### tempura.compile(input, options?)
