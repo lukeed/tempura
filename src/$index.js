@@ -8,12 +8,12 @@ export function esc(value) {
 	for (; idx < len; idx++) {
 		char = value.charCodeAt(idx);
 
+		// <  60
 		// &  38
 		// "  34
 		// '  39
-		// <  60
 
-		if (char === 38 || char === 34 || char === 39 || char === 60) {
+		if (char === 60 || char === 38 || char === 34 || char === 39) {
 			out += value.substring(last, idx) + ('&#' + char + ';');
 			last = char + 1;
 		}
