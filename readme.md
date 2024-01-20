@@ -9,11 +9,14 @@
   <a href="https://travis-ci.org/lukeed/tempura">
     <img src="https://github.com/lukeed/tempura/workflows/CI/badge.svg" alt="CI" />
   </a>
-  <a href="https://codecov.io/gh/lukeed/tempura">
-    <img src="https://badgen.now.sh/codecov/c/github/lukeed/tempura" alt="codecov" />
+  <a href="https://licenses.dev/npm/tempura">
+    <img src="https://licenses.dev/b/npm/tempura" alt="licenses" />
   </a>
   <a href="https://npmjs.org/package/tempura">
     <img src="https://badgen.now.sh/npm/dm/tempura" alt="downloads" />
+  </a>
+  <a href="https://codecov.io/gh/lukeed/tempura">
+    <img src="https://badgen.now.sh/codecov/c/github/lukeed/tempura" alt="codecov" />
   </a>
 </div>
 
