@@ -253,6 +253,15 @@ compile('should allow `Compiler` output as blocks', () => {
 	);
 });
 
+compile('should render backticks without need of escaping', () => {
+	let output = tempura.compile('{{#expect value}}`{{value}}`');
+
+	assert.is(
+		output({ value: 'VALUE' }),
+		'`VALUE`'
+	);
+});
+
 compile.run();
 
 // ---

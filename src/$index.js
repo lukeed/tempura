@@ -19,7 +19,7 @@ export function esc(value) {
 
 export function compile(input, options={}) {
 	return new (options.async ? (async()=>{}).constructor : Function)(
-		'$$1', '$$2', '$$3', gen(input, options)
+		'$$1', '$$2', '$$3', gen(input.replace(/`/g, '\\`'), options)
 	).bind(0, options.escape || esc, options.blocks);
 }
 
