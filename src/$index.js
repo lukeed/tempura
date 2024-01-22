@@ -1,7 +1,9 @@
-const ESCAPE = /[&"<]/g, CHARS = {
+const ESCAPE = /[&"'<>]/g, CHARS = {
+	"'": '&apos;',
 	'"': '&quot;',
 	'&': '&amp;',
-	'<': '&lt',
+	'<': '&lt;',
+	'>': '&gt;'
 };
 
 import { gen } from './$utils';
