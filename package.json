@@ -28,15 +28,18 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./index.d.ts"
     },
     "./esbuild": {
       "import": "./esbuild/index.mjs",
-      "require": "./esbuild/index.js"
+      "require": "./esbuild/index.js",
+      "types": "./esbuild/index.d.ts"
     },
     "./rollup": {
       "import": "./rollup/index.mjs",
-      "require": "./rollup/index.js"
+      "require": "./rollup/index.js",
+      "types": "./rollup/index.d.ts"
     },
     "./package.json": "./package.json"
   },
