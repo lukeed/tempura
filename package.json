@@ -27,14 +27,17 @@
   ],
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
     "./esbuild": {
+      "types": "./esbuild/index.d.ts",
       "import": "./esbuild/index.mjs",
       "require": "./esbuild/index.js"
     },
     "./rollup": {
+      "types": "./rollup/index.d.ts",
       "import": "./rollup/index.mjs",
       "require": "./rollup/index.js"
     },
