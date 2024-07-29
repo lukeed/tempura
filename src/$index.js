@@ -1,19 +1,24 @@
-const ESCAPE = /[&"<]/g, CHARS = {
-	'"': '&quot;',
-	'&': '&amp;',
-	'<': '&lt',
-};
-
 import { gen } from './$utils';
 
 export function esc(value) {
 	value = (value == null) ? '' : '' + value;
-	let last=ESCAPE.lastIndex=0, tmp=0, out='';
-	while (ESCAPE.test(value)) {
-		tmp = ESCAPE.lastIndex - 1;
-		out += value.substring(last, tmp) + CHARS[value[tmp]];
-		last = tmp + 1;
+
+	let idx = 0, len = value.length, char = 0, last = 0, out = '';
+
+	for (; idx < len; idx++) {
+		char = value.charCodeAt(idx);
+
+		// <  60
+		// &  38
+		// "  34
+		// '  39
+
+		if (char === 60 || char === 38 || char === 34 || char === 39) {
+			out += value.substring(last, idx) + ('&#' + char + ';');
+			last = char + 1;
+		}
 	}
+
 	return out + value.substring(last);
 }
 
