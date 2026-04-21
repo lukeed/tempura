@@ -253,6 +253,60 @@ compile('should allow `Compiler` output as blocks', () => {
 	);
 });
 
+compile('should support nested `#each` loops', () => {
+	let render = tempura.compile(`
+		{{#expect groups}}
+		{{#each groups as (g)}}
+			<h1>{{ g.name }}</h1>
+			<ul>{{#each g.items as (it)}}<li>{{ it }}</li>{{/each}}</ul>
+		{{/each}}
+	`);
+
+	let normalize = x => x.replace(/[\r\n\t]+/g, '');
+	let out = normalize(render({
+		groups: [
+			{ name: 'A', items: ['a1', 'a2'] },
+			{ name: 'B', items: ['b1'] },
+		],
+	}));
+
+	// Outer loop must emit BOTH groups (previously terminated after the first
+	// because the inner loop clobbered the outer's `$$a`).
+	assert.is(
+		out,
+		'<h1>A</h1><ul><li>a1</li><li>a2</li></ul><h1>B</h1><ul><li>b1</li></ul>'
+	);
+});
+
+compile('should support triple-nested `#each` loops', () => {
+	let render = tempura.compile(`
+		{{#expect data}}
+		{{#each data as (outer)}}[{{#each outer as (middle)}}({{#each middle as (leaf)}}{{ leaf }}{{/each}}){{/each}}]{{/each}}
+	`);
+
+	let normalize = s => s.replace(/[\r\n\t]+/g, '');
+	let out = normalize(render({
+		data: [[[1, 2], [3]], [[4]]],
+	}));
+
+	assert.is(out, '[(12)(3)][(4)]');
+});
+
+compile('should support nested `#each` with implicit `i` index', () => {
+	let render = tempura.compile(`
+		{{#expect rows}}
+		{{#each rows as row}}{{#each row as cell}}{{ i }}:{{ cell }} {{/each}}| {{/each}}
+	`);
+
+	let normalize = x => x.replace(/[\r\n\t]+/g, '');
+	let out = normalize(render({
+		rows: [['a', 'b'], ['c']],
+	}));
+
+	// Each `#each` has its own `i`; block scoping keeps them from colliding.
+	assert.is(out, '0:a 1:b | 0:c | ');
+});
+
 compile.run();
 
 // ---
