@@ -48,15 +48,20 @@ export function gen(input, options) {
 				inner = inner.substring(num).trim().replace(/[;]$/, '');
 				txt += `var ${tmp}=${inner};`;
 			} else if (action === 'each') {
+				// Block-scoped `let` so nested `#each` loops don't clobber the
+				// outer loop's iteration variable or accumulator. Previous
+				// `var`-based output hoisted `i` and `$$a` to function scope,
+				// so an inner `#each` reassigned them and the outer loop
+				// terminated after one pass.
 				num = inner.indexOf(' as ');
 				stack.push(action);
 				if (!~num) {
-					txt += `for(var i=0,$$a=${inner};i<$$a.length;i++){`;
+					txt += `for(let i=0,$$a=${inner};i<$$a.length;i++){`;
 				} else {
 					tmp = inner.substring(0, num).trim();
 					inner = inner.substring(num + 4).trim();
 					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
-					txt += `for(var ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
+					txt += `for(let ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
 				}
 			} else if (action === 'if') {
 				txt += `if(${inner}){`;
