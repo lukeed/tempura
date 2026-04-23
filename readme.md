@@ -159,6 +159,11 @@ Benchmark: Render w/ escaped values
   tempura            x 2,922 ops/sec ±0.31% (96 runs sampled)
 ```
 
+## Integration with Webpack
+
+The [html-bundler-webpack-plugin](https://github.com/webdiscus/html-bundler-webpack-plugin) can render various templating engines, [including Tempure](https://github.com/webdiscus/html-bundler-webpack-plugin#using-the-tempure).\
+Open [the usage example](https://stackblitz.com/edit/webpack-tempura?file=webpack.config.js) directly in a browser.
+
 ## License
 
 MIT © [Luke Edwards](https://lukeed.com)
