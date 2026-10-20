@@ -1,34 +1,37 @@
+import { createRequire } from 'node:module';
 import * as assert from 'uvu/assert';
 import { runner } from './util.js';
+
+const require = createRequire(import.meta.url);
 
 console.log('Loading:\n---');
 
 console.time('pug');
-const pug = (await import('pug')).default;
+const pug = require('pug');
 console.timeEnd('pug');
 
 console.time('ejs');
-const ejs = (await import('ejs')).default;
+const ejs = require('ejs');
 console.timeEnd('ejs');
 
 console.time('handlebars');
-const handlebars = (await import('handlebars')).default;
+const handlebars = require('handlebars');
 console.timeEnd('handlebars');
 
 console.time('yeahjs');
-const yeahjs = (await import('yeahjs')).default;
+const yeahjs = require('yeahjs');
 console.timeEnd('yeahjs');
 
 console.time('dot');
-const dot = (await import('dot')).default;
+const dot = require('dot');
 console.timeEnd('dot');
 
 console.time('art-template');
-const art = (await import('art-template')).default;
+const art = require('art-template');
 console.timeEnd('art-template');
 
 console.time('tempura');
-const tempura = await import('../dist/index.js');
+const tempura = require('../dist/index.js');
 console.timeEnd('tempura');
 
 // ---
