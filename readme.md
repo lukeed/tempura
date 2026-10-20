@@ -129,28 +129,28 @@ Visit the [API](/docs/api.md), [Custom Blocks](/docs/blocks.md), and [Plugins](/
 
 ## Benchmarks
 
-> Running via Node v14.15.13
+> Running via Node v26.11.1, on an Apple M1 Max
 
-Please visit the [`/bench`](/bench) directory for complete, reproducible benchmarks.
+Please visit the [`/bench`](/bench) directory for complete, reproducible benchmarks, including results for Bun.
 
 The following is a subset of the full results, presented without context. Again, please visit [`/bench`](/bench) for explanations, comparisons, and/or differences.
 
 ```
 Benchmark: Render w/ raw values (no escape)
-  pug                x 34,847 ops/sec ±2.79% (93 runs sampled)
-  handlebars         x  6,700 ops/sec ±1.41% (92 runs sampled)
-  ejs                x    802 ops/sec ±0.54% (94 runs sampled)
-  dot                x 40,704 ops/sec ±3.08% (93 runs sampled)
-  art-template       x 39,839 ops/sec ±0.86% (90 runs sampled)
-  tempura            x 44,656 ops/sec ±0.42% (92 runs sampled)
+  pug                x 54,320 ops/sec ±1.12% (98 runs sampled)
+  handlebars         x 13,553 ops/sec ±0.12% (98 runs sampled)
+  ejs                x  1,372 ops/sec ±0.21% (100 runs sampled)
+  dot                x 71,294 ops/sec ±0.61% (101 runs sampled)
+  art-template       x 73,490 ops/sec ±0.25% (95 runs sampled)
+  tempura            x 66,696 ops/sec ±0.51% (92 runs sampled)
 
 Benchmark: Render w/ escaped values
-  pug                x 2,800 ops/sec ±0.31% (95 runs sampled)
-  handlebars         x   733 ops/sec ±0.34% (94 runs sampled)
-  ejs                x   376 ops/sec ±0.17% (91 runs sampled)
-  dot                x   707 ops/sec ±0.15% (96 runs sampled)
-  art-template       x 2,707 ops/sec ±0.12% (96 runs sampled)
-  tempura            x 2,922 ops/sec ±0.31% (96 runs sampled)
+  pug                x 4,641 ops/sec ±0.31% (98 runs sampled)
+  handlebars         x 2,135 ops/sec ±0.28% (98 runs sampled)
+  ejs                x   808 ops/sec ±0.17% (96 runs sampled)
+  dot                x 1,967 ops/sec ±0.28% (97 runs sampled)
+  art-template       x 4,550 ops/sec ±2.33% (97 runs sampled)
+  tempura            x 5,191 ops/sec ±1.41% (99 runs sampled)
 ```
 
 ## License
