@@ -388,6 +388,13 @@ loose('should ignore non-identifiers', () => {
 	assert.is(baz, 'var{hello}=$$3,$$x=`${hello == 123}`;return $$x');
 });
 
+loose('should not expect keywords', () => {
+	assert.is(
+		gen('{{ x === null || typeof y }}{{ z instanceof Date }}{{ void 0 }}{{ "a" in w }}{{ new Date }}{{ true }}{{ this }}', { loose: true }),
+		'var{x,y,z,Date,w}=$$3,$$x=`${$$1(x === null || typeof y)}${$$1(z instanceof Date)}${$$1(void 0)}${$$1("a" in w)}${$$1(new Date)}${$$1(true)}${$$1(this)}`;return $$x'
+	);
+});
+
 loose.run();
 
 // ---
