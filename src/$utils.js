@@ -1,7 +1,37 @@
 const ENDLINES = /[\r\n]+$/g;
-const CURLY = /{{{?\s*([\s\S]*?)\s*}}}?/g;
 const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const ARGS = /([a-zA-Z$_][^\s=]*)\s*=\s*((["`'])(?:(?=(\\?))\4.)*?\3|{[^}]*}|\[[^\]]*]|\S+)/g;
+
+function quote(src, i) {
+	for (let q = src[i++]; i < src.length; i++) {
+		if (src[i] === '\\') i++;
+		else if (src[i] === q) return i + 1;
+	}
+	return -1;
+}
+
+// The next {{ … }} or {{{ … }}} from `from`; it closes outside quotes and nested braces, except in a {{! comment }}.
+function tag(src, from) {
+	let index = src.indexOf('{{', from);
+	if (index === -1) return;
+	let raw = src[index + 2] === '{';
+	let start = index + (raw ? 3 : 2);
+	let end = raw ? '}}}' : '}}';
+	let note = /^\s*!/.test(src.substring(start, start + 64));
+	for (let i = start, depth = 0; i < src.length; i++) {
+		let char = src[i];
+		if (!note && (char === '"' || char === "'" || char === '`')) {
+			let next = quote(src, i);
+			if (next !== -1) i = next - 1;
+		} else if (!note && char === '{') {
+			depth++;
+		} else if (!note && char === '}' && depth > 0) {
+			depth--;
+		} else if (src.startsWith(end, i)) {
+			return { index, raw, text: src.substring(index, i + end.length), inner: src.substring(start, i) };
+		}
+	}
+}
 
 // $$1 = escape()
 // $$2 = extra blocks
@@ -10,7 +40,7 @@ export function gen(input, options) {
 	options = options || {};
 
 	let char, num, action, tmp;
-	let last = CURLY.lastIndex = 0;
+	let last = 0;
 	let wip='', txt='', match, inner;
 
 	let extra=options.blocks||{}, stack=[];
@@ -25,11 +55,11 @@ export function gen(input, options) {
 		wip = '';
 	}
 
-	while (match = CURLY.exec(input)) {
+	while (match = tag(input, last)) {
 		wip += input.substring(last, match.index).replace(ENDLINES, '');
-		last = match.index + match[0].length;
+		last = match.index + match.text.length;
 
-		inner = match[1].trim();
+		inner = match.inner.trim();
 		char = inner.charAt(0);
 
 		if (char === '!') {
@@ -90,7 +120,7 @@ export function gen(input, options) {
 			if (action === inner) txt += '}';
 			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
 		} else {
-			if (match[0].charAt(2) === '{') wip += '${' + inner + '}'; // {{{ raw }}}
+			if (match.raw) wip += '${' + inner + '}'; // {{{ raw }}}
 			else wip += '${$$1(' + inner + ')}';
 			if (options.loose) {
 				while (tmp = VAR.exec(inner)) {
