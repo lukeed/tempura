@@ -5,7 +5,7 @@ const KEYWORDS = new Set('await delete false in instanceof new null this true ty
 const EACH = /\sas[\s(]/;
 const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
 
-function text(src, from, to) {
+function chunk(src, from, to) {
 	let end = to;
 	while (end > from && (src.charCodeAt(end - 1) === 10 || src.charCodeAt(end - 1) === 13)) end--;
 	return src.substring(from, end);
@@ -106,36 +106,39 @@ export function gen(input, options) {
 
 	let char, num, action, tmp;
 	let last = 0;
-	let parts=[], plain='', txt='', match, inner;
+	let wip='', plain='', txt='', match, inner;
 
 	let extra=options.blocks||{}, stack=[], ended=new Set;
 	let initials = new Set(options.props||[]);
 
+	function text(str) {
+		plain += str;
+	}
+
 	function flush() {
-		if (plain) parts.push(JSON.stringify(plain));
+		if (!plain) return;
+		wip += (wip ? '+' : '') + JSON.stringify(plain);
 		plain = '';
 	}
 
 	// a string first, so `{{{ a }}}{{{ b }}}` joins numbers, not adds them
 	function value(code) {
 		flush();
-		if (!parts.length) parts.push('""');
-		parts.push(code);
+		wip += (wip ? '+' : '""+') + code;
 	}
 
 	function close() {
 		flush();
-		if (parts.length > 0) {
-			txt += (txt ? '$$x+=' : '=') + parts.join('+') + ';';
+		if (wip.length > 0) {
+			txt += (txt ? '$$x+=' : '=') + wip + ';';
 		} else if (txt.length === 0) {
 			txt = '="";'
 		}
-		parts = [];
+		wip = '';
 	}
 
 	while (match = tag(input, last)) {
-		tmp = text(input, last, match.index);
-		plain += tmp;
+		text(chunk(input, last, match.index));
 		last = match.index + match.text.length;
 
 		inner = match.inner.trim();
@@ -227,8 +230,7 @@ export function gen(input, options) {
 	}
 
 	if (last < input.length) {
-		tmp = text(input, last, input.length);
-		plain += tmp;
+		text(chunk(input, last, input.length));
 	}
 
 	close();
