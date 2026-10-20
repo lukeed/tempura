@@ -18,9 +18,13 @@ export function esc(value) {
 }
 
 export function compile(input, options={}) {
-	return new (options.async ? (async()=>{}).constructor : Function)(
+	let render = new (options.async ? (async()=>{}).constructor : Function)(
 		'$$1', '$$2', '$$3', gen(input, options)
-	).bind(0, options.escape || esc, options.blocks);
+	);
+	let escape = options.escape || esc;
+	return options.async
+		? async (data, blocks) => render(escape, blocks || options.blocks, data)
+		: (data, blocks) => render(escape, blocks || options.blocks, data);
 }
 
 export function transform(input, options={}) {
