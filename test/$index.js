@@ -103,12 +103,12 @@ compile('should produce valid output :: escape', () => {
 
 	assert.is(
 		output({ value: '<b>howdy</b>' }).replace(/[\r\n\t]+/g, ''),
-		'"&ltb>howdy&lt/b>" is more than 10 characters'
+		'"&lt;b>howdy&lt;/b>" is more than 10 characters'
 	);
 
 	assert.is(
 		output({ value: '<b>aaa</b>' }).replace(/[\r\n\t]+/g, ''),
-		'"&ltb>aaa&lt/b>" is too short'
+		'"&lt;b>aaa&lt;/b>" is too short'
 	);
 });
 
@@ -331,7 +331,7 @@ esc('should convert non-string inputs to string', () => {
 
 esc('should prevent xss scripting in array', () => {
 	let output = tempura.esc(['<img src=x onerror="alert(1)" />']);
-	assert.is(output, '&ltimg src=x onerror=&quot;alert(1)&quot; />');
+	assert.is(output, '&lt;img src=x onerror=&quot;alert(1)&quot; />');
 });
 
 esc('should return string from string input', () => {
@@ -342,7 +342,7 @@ esc('should return string from string input', () => {
 esc('should escape `<` character', () => {
 	assert.is(
 		tempura.esc('here: <'),
-		'here: &lt'
+		'here: &lt;'
 	);
 });
 
@@ -363,7 +363,7 @@ esc('should escape `&` character', () => {
 esc('should escape all target characters in a string', () => {
 	assert.is(
 		tempura.esc('&&& <<< """'),
-		'&amp;&amp;&amp; &lt&lt&lt &quot;&quot;&quot;'
+		'&amp;&amp;&amp; &lt;&lt;&lt; &quot;&quot;&quot;'
 	);
 });
 
@@ -372,12 +372,12 @@ esc('should reset state on same input string', () => {
 
 	assert.is(
 		tempura.esc(input),
-		'&ltfoo>&quot;hello&quot;&lt/foo>'
+		'&lt;foo>&quot;hello&quot;&lt;/foo>'
 	);
 
 	assert.is(
 		tempura.esc(input),
-		'&ltfoo>&quot;hello&quot;&lt/foo>',
+		'&lt;foo>&quot;hello&quot;&lt;/foo>',
 		'~> repeat'
 	);
 });
