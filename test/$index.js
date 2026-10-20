@@ -327,6 +327,14 @@ compile('should call ".", "/", and one-character block names', () => {
 	assert.is(render(), '1|2|3');
 });
 
+compile('should use blocks given at call time', () => {
+	let render = tempura.compile('{{#show a=1}}', {
+		blocks: { show: args => JSON.stringify(args) }
+	});
+	assert.is(render({}), '{"a":1}');
+	assert.is(render({}, { show: () => 'other' }), 'other');
+});
+
 compile.run();
 
 // ---
