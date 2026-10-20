@@ -30,7 +30,9 @@ function tag(src, from) {
 	let raw = src[index + 2] === '{';
 	let start = index + (raw ? 3 : 2);
 	let end = raw ? '}}}' : '}}';
-	let note = /^\s*!/.test(src.substring(start, start + 64));
+	let at = start;
+	while (space(src[at])) at++;
+	let note = src[at] === '!';
 	for (let i = start, depth = 0; i < src.length; i++) {
 		let char = src[i];
 		if (!note && (char === '"' || char === "'" || char === '`')) {
