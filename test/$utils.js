@@ -704,6 +704,11 @@ stack('should throw on #else or #elif after #else', () => {
 	assert.not.throws(() => gen('{{#if a}}1{{#else}}2{{/if}}{{#if b}}3{{#else}}4{{/if}}'));
 });
 
+stack('should throw on a block with no name', () => {
+	assert.throws(() => gen('{{# }}'), err => err.message === 'Cannot read the name of block: "{{# }}"');
+	assert.throws(() => gen('{{#.a}}'), err => err.message === 'Cannot read the name of block: "{{#.a}}"');
+});
+
 stack('should throw on a close with no open block', () => {
 	assert.throws(() => gen('{{/if}}'), err => err.message === 'Unexpected "/if" with no open block');
 });
