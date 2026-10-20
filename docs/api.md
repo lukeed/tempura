@@ -88,7 +88,7 @@ let template = `
 let esm = tempura.transform(template);
 console.log(typeof esm); //=> "string"
 console.log(esm);
-//=> 'import{esc as $$1}from"tempura";export default function($$3,$$2){var{age}=$$3,$$x=`\n  `;$$x+=`\n  `;if(age < 100){$$x+=`\n    You\'re not 100+ yet\n  `;}else{$$x+=`\n    What\'s the secret?\n  `;}return $$x}'
+//=> 'import{esc as $$1}from"tempura";export default function($$3,$$2){var{age}=$$3,$$x=`\n`;if(age < 100){$$x+=`    You\'re not 100+ yet\n`;}else{$$x+=`    What\'s the secret?\n`;}return $$x}'
 ```
 
 #### input

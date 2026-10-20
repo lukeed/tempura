@@ -102,6 +102,28 @@ Template comments will never appear in the rendered output. However, HTML commen
 <p>hello world</p>
 ```
 
+## Whitespace
+
+Tempura keeps the text of a template as it is, including its line breaks, with one exception: a line that holds only a block or comment tag, such as `{{#if}}`, `{{#else}}`, `{{/each}}`, `{{#expect}}`, or `{{! note }}`, leaves no trace. The line's indent, the tag, and its line break are all removed. This is the same rule as Handlebars.
+
+```hbs
+<ul>
+  {{#each items as item}}
+  <li>{{ item }}</li>
+  {{/each}}
+</ul>
+```
+
+```html
+<!-- output -->
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
+```
+
+A tag that shares its line with text or other tags keeps its line as it is, and so does a value tag, such as `{{ value }}`, even when it is alone on its line.
+
 ## Helpers
 
 The tempura syntax comes with few (but powerful) template helpers!
