@@ -28,7 +28,7 @@ const art = (await import('art-template')).default;
 console.timeEnd('art-template');
 
 console.time('tempura');
-const tempura = await import('tempura');
+const tempura = await import('../dist/index.js');
 console.timeEnd('tempura');
 
 // ---

@@ -8,6 +8,15 @@ Put differently, this example illustrates how tempura's esbuild and/or Rolldown 
 
 ***Setup***
 
+This example loads tempura from this repository's `dist/` folder, so build tempura first, from the repository root:
+
+```sh
+$ bun install
+$ bun run build
+```
+
+Then install this example:
+
 ```sh
 $ npm install
 ```

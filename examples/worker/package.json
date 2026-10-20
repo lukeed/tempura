@@ -7,7 +7,6 @@
   },
   "devDependencies": {
     "esbuild": "0.28.2",
-    "rolldown": "1.2.14",
-    "tempura": "file:../.."
+    "rolldown": "1.2.14"
   }
 }
