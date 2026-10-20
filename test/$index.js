@@ -307,6 +307,14 @@ compile('should support nested `#each` with implicit `i` index', () => {
 	assert.is(out, '0:a 1:b | 0:c | ');
 });
 
+compile('should allow a value named `x`', () => {
+	let render = tempura.compile('<p>{{ x }}</p>{{#var y = x + 1}}<b>{{ y }}</b>', { props: ['x'] });
+	assert.is(render({ x: 1 }), '<p>1</p><b>2</b>');
+
+	render = tempura.compile('{{#var x = 1}}A{{ x }}');
+	assert.is(render(), 'A1');
+});
+
 compile.run();
 
 // ---

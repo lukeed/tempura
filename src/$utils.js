@@ -18,7 +18,7 @@ export function gen(input, options) {
 
 	function close() {
 		if (wip.length > 0) {
-			txt += (txt ? 'x+=' : '=') + '`' + wip + '`;';
+			txt += (txt ? '$$x+=' : '=') + '`' + wip + '`;';
 		} else if (txt.length === 0) {
 			txt = '="";'
 		}
@@ -110,6 +110,6 @@ export function gen(input, options) {
 
 	close();
 
-	tmp = initials.size ? `{${ [...initials].join() }}=$$3,x` : ' x';
-	return `var${tmp + txt}return x`;
+	tmp = initials.size ? `{${ [...initials].join() }}=$$3,$$x` : ' $$x';
+	return `var${tmp + txt}return $$x`;
 }
