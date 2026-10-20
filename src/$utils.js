@@ -4,6 +4,7 @@ const NAME = /[a-zA-Z$_][^\s=]*/y;
 const IDENT = /^[a-zA-Z$_][\w$]*$/;
 const KEYWORDS = new Set('await delete false in instanceof new null this true typeof undefined void yield'.split(' '));
 const LITERAL = /[\\`]|\$\{/g;
+const EACH = /\sas[\s(]/;
 
 function space(char) {
 	return char === ' ' || char === '\t' || char === '\n' || char === '\r';
@@ -92,6 +93,7 @@ export function gen(input, options) {
 
 	let extra=options.blocks||{}, stack=[], ended=new Set;
 	let initials = new Set(options.props||[]);
+	let literal = input.includes('`') || input.includes('\\') || input.includes('${');
 
 	function close() {
 		if (wip.length > 0) {
@@ -103,7 +105,8 @@ export function gen(input, options) {
 	}
 
 	while (match = tag(input, last)) {
-		wip += input.substring(last, match.index).replace(ENDLINES, '').replace(LITERAL, '\\$&');
+		tmp = input.substring(last, match.index).replace(ENDLINES, '');
+		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
 		last = match.index + match.text.length;
 
 		inner = match.inner.trim();
@@ -132,7 +135,7 @@ export function gen(input, options) {
 				// `var`-based output hoisted `i` and `$$a` to function scope,
 				// so an inner `#each` reassigned them and the outer loop
 				// terminated after one pass.
-				num = inner.search(/\sas[\s(]/);
+				num = inner.search(EACH);
 				stack.push(action);
 				if (!~num) {
 					txt += `for(let i=0,$$a=${inner};i<$$a.length;i++){`;
@@ -190,7 +193,8 @@ export function gen(input, options) {
 	}
 
 	if (last < input.length) {
-		wip += input.substring(last).replace(ENDLINES, '').replace(LITERAL, '\\$&');
+		tmp = input.substring(last).replace(ENDLINES, '');
+		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
 	}
 
 	close();
