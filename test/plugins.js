@@ -5,6 +5,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import * as esbuild from 'esbuild';
 import { build as rolldownBuild } from 'rolldown';
+import { build as viteBuild, createServer } from 'vite';
 import * as plugins from '../src/plugins.js';
 
 const CORE = join(import.meta.dirname, '../src/$index.js');
@@ -28,6 +29,7 @@ const options = suite('options');
 options('should throw on a `values` that is not a function', () => {
 	assert.throws(() => plugins.esbuild.compile({ values: {} }), /options\.values/);
 	assert.throws(() => plugins.rolldown.compile({ values: {} }), /options\.values/);
+	assert.throws(() => plugins.vite.compile({ values: {} }), /options\.values/);
 });
 
 options('should throw on a `minify` that is not a function', () => {
@@ -168,3 +170,75 @@ roll('transform :: fails the build on a template error', async () => {
 });
 
 roll.run();
+
+// ---
+
+const vite = suite('vite');
+
+async function vitest(dir, plugin) {
+	await viteBuild({
+		root: dir,
+		configFile: false,
+		logLevel: 'silent',
+		resolve: { alias: { tempura: CORE } },
+		plugins: [plugin],
+		build: {
+			outDir: join(dir, 'dist'),
+			minify: false,
+			lib: { entry: join(dir, 'entry.js'), formats: ['es'], fileName: () => 'out.js' },
+		},
+	});
+	return load(join(dir, 'dist/out.js'));
+}
+
+vite('runs before the vite transforms', () => {
+	assert.is(plugins.vite.transform().enforce, 'pre');
+	assert.is(plugins.vite.compile().enforce, 'pre');
+});
+
+vite('transform :: loads a template as its render function', async () => {
+	let dir = await fixture();
+	try {
+		let render = await vitest(dir, plugins.vite.transform());
+		assert.is(render({ name: '<b>' }), '<p>Hello, &lt;b>!</p>');
+	} finally {
+		await rm(dir, { recursive: true, force: true });
+	}
+});
+
+vite('compile :: loads a template as its HTML, from `values`, then `minify`', async () => {
+	let dir = await fixture();
+	try {
+		let file;
+		let html = await vitest(dir, plugins.vite.compile({
+			values: path => (file = path, { name: 'Luke' }),
+			minify: text => text.toUpperCase(),
+		}));
+		assert.is(html, '<P>HELLO, LUKE!</P>');
+		assert.is(file, join(dir, 'page.hbs'));
+	} finally {
+		await rm(dir, { recursive: true, force: true });
+	}
+});
+
+vite('transform :: serves a template as a module in dev', async () => {
+	let dir = await fixture();
+	let server = await createServer({
+		root: dir,
+		configFile: false,
+		logLevel: 'silent',
+		resolve: { alias: { tempura: CORE } },
+		server: { middlewareMode: true, ws: false },
+		plugins: [plugins.vite.transform()],
+	});
+	try {
+		let result = await server.transformRequest('/page.hbs');
+		assert.match(result.code, 'export default function($$3,$$2)');
+		assert.match(result.code, '$index.js');
+	} finally {
+		await server.close();
+		await rm(dir, { recursive: true, force: true });
+	}
+});
+
+vite.run();

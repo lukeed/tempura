@@ -106,3 +106,13 @@ export const rolldown = {
 		};
 	},
 };
+
+export const vite = {
+	transform(options) {
+		return { ...rolldown.transform(options), enforce: 'pre' };
+	},
+
+	compile(options) {
+		return { ...rolldown.compile(options), enforce: 'pre' };
+	},
+};

@@ -124,7 +124,7 @@ Please refer to the [Syntax Cheatsheet](/docs/syntax.md).
 
 ## API
 
-Visit the [API](/docs/api.md) and [Custom Blocks](/docs/blocks.md) for documentation.
+Visit the [API](/docs/api.md), [Custom Blocks](/docs/blocks.md), and [Plugins](/docs/plugins.md) for documentation.
 
 
 ## Benchmarks

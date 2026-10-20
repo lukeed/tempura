@@ -1,5 +1,6 @@
 import type { Plugin as EsbuildPlugin } from 'esbuild';
 import type { Plugin as RolldownPlugin } from 'rolldown';
+import type { Plugin as VitePlugin } from 'vite';
 import type { Args, Options } from 'tempura';
 
 export type TransformOptions = Options & {
@@ -47,4 +48,17 @@ export declare namespace rolldown {
 	 * @example rolldown({ plugins: [rolldown.compile({ values: () => ({ title: 'Hello' }) })] })
 	 */
 	function compile(options?: CompileOptions): RolldownPlugin;
+}
+
+export declare namespace vite {
+	/**
+	 * Load each template as a module whose default export renders it.
+	 * @example defineConfig({ plugins: [vite.transform()] })
+	 */
+	function transform(options?: TransformOptions): VitePlugin;
+	/**
+	 * Render each template at build time, and load it as its HTML string.
+	 * @example defineConfig({ plugins: [vite.compile({ values: () => ({ title: 'Hello' }) })] })
+	 */
+	function compile(options?: CompileOptions): VitePlugin;
 }
