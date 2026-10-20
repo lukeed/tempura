@@ -1,7 +1,7 @@
 // NOTE: Must be built!
 // $ npm run esbuild
 // OR
-// $ npm run rollup
+// $ npm run rolldown
 import Tasks from './todos.hbs';
 
 /**

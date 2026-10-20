@@ -1,5 +1,5 @@
 import type { Plugin as EsbuildPlugin } from 'esbuild';
-import type { Plugin as RollupPlugin } from 'rollup';
+import type { Plugin as RolldownPlugin } from 'rolldown';
 import type { Args, Options } from 'tempura';
 
 export type TransformOptions = Options & {
@@ -36,15 +36,15 @@ export declare namespace esbuild {
 	function compile(options?: CompileOptions): EsbuildPlugin;
 }
 
-export declare namespace rollup {
+export declare namespace rolldown {
 	/**
 	 * Load each template as a module whose default export renders it.
-	 * @example rollup({ plugins: [rollup.transform()] })
+	 * @example rolldown({ plugins: [rolldown.transform()] })
 	 */
-	function transform(options?: TransformOptions): RollupPlugin;
+	function transform(options?: TransformOptions): RolldownPlugin;
 	/**
 	 * Render each template at build time, and load it as its HTML string.
-	 * @example rollup({ plugins: [rollup.compile({ values: () => ({ title: 'Hello' }) })] })
+	 * @example rolldown({ plugins: [rolldown.compile({ values: () => ({ title: 'Hello' }) })] })
 	 */
-	function compile(options?: CompileOptions): RollupPlugin;
+	function compile(options?: CompileOptions): RolldownPlugin;
 }

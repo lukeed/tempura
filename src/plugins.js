@@ -76,15 +76,17 @@ export const esbuild = {
 	},
 };
 
-export const rollup = {
+export const rolldown = {
 	transform(options) {
 		let { filter, config } = settings(options);
 
 		return {
 			name: 'tempura',
-			transform(source, file) {
-				if (!filter.test(file)) return;
-				return tempura.transform(source, config);
+			transform: {
+				filter: { id: filter },
+				handler(source) {
+					return { code: tempura.transform(source, config), moduleType: 'js' };
+				},
 			},
 		};
 	},
@@ -94,10 +96,12 @@ export const rollup = {
 
 		return {
 			name: 'tempura',
-			async transform(source, file) {
-				if (!filter.test(file)) return;
-				let result = await render(source, file, values, minify, config);
-				return 'export default ' + JSON.stringify(result);
+			transform: {
+				filter: { id: filter },
+				async handler(source, file) {
+					let result = await render(source, file, values, minify, config);
+					return { code: 'export default ' + JSON.stringify(result), moduleType: 'js' };
+				},
 			},
 		};
 	},

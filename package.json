@@ -50,6 +50,7 @@
   "devDependencies": {
     "bundt": "1.1.5",
     "esbuild": "0.28.2",
+    "rolldown": "1.2.14",
     "uvu": "0.5.1"
   }
 }
