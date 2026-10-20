@@ -416,7 +416,7 @@ blocks('should allow custom directives', () => {
 	});
 
 	assert.type(output, 'string');
-	assert.is(output, 'var $$x="";$$x+=`${$$2.include({x:"name",src:true},$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["include"]({x:"name",src:true},$$2)}`;return $$x');
 });
 
 blocks('should throw on arguments it cannot read', () => {
@@ -438,7 +438,7 @@ blocks('should allow {{{ raw }}} function callers', () => {
 		}
 	});
 
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello({foo:"bar"},$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"]({foo:"bar"},$$2)}`;return $$x');
 });
 
 blocks('should parse arguments for function callers', () => {
@@ -451,7 +451,7 @@ blocks('should parse arguments for function callers', () => {
 	});
 
 	let args = `{foo:"foo",arr:["a b c", 123],bar:'bar',o:{ foo, bar },hi:howdy}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
 });
 
 blocks('arguments parsing : strings', () => {
@@ -464,7 +464,7 @@ blocks('arguments parsing : strings', () => {
 	});
 
 	let args = `{foo:"foo",bar:'bar',baz:\`baz\`,hello:"foo 'bar' baz"}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
 });
 
 blocks('arguments parsing : booleans', () => {
@@ -477,7 +477,7 @@ blocks('arguments parsing : booleans', () => {
 	});
 
 	let args = `{foo:true,bar:true,baz:false,hello:false}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
 });
 
 blocks('arguments parsing : arrays', () => {
@@ -490,7 +490,7 @@ blocks('arguments parsing : arrays', () => {
 	});
 
 	let args = `{foo:[1,2,3],bar:[1, 2,  3],baz:['foo','baz']}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
 });
 
 blocks('arguments parsing : objects', () => {
@@ -503,7 +503,7 @@ blocks('arguments parsing : objects', () => {
 	});
 
 	let args = `{foo:{a,b},bar:{ x, y:123 }}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
 });
 
 blocks('arguments parsing : groups', () => {
@@ -516,7 +516,15 @@ blocks('arguments parsing : groups', () => {
 	});
 
 	let args = `{docs:(page.section === 'docs'),sum:(1 + (2 * 3)),text:(mark === ')' ? "a b" : 'c'),m:{ a: { b: [1, { c: '}' }] } }}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+});
+
+blocks('should allow ".", "/", and one-character block names', () => {
+	let output = gen(`{{#a}}{{#a.b}}{{#a/b}}`, {
+		blocks: { a() {}, 'a.b'() {}, 'a/b'() {} }
+	});
+
+	assert.is(output, 'var $$x="";$$x+=`${$$2["a"]({},$$2)}`;$$x+=`${$$2["a.b"]({},$$2)}`;$$x+=`${$$2["a/b"]({},$$2)}`;return $$x');
 });
 
 blocks('should still throw on unknown block', () => {
@@ -545,7 +553,7 @@ blocks('should allow multi-line arguments', () => {
 		{ blocks }
 	);
 
-	let expects = 'var $$x="";$$x+=`${$$2.script({type:"module",src:"foobar.mjs",async:true},$$2)}`;return $$x';
+	let expects = 'var $$x="";$$x+=`${$$2["script"]({type:"module",src:"foobar.mjs",async:true},$$2)}`;return $$x';
 	assert.is(output, expects);
 
 	output = gen(
@@ -681,8 +689,8 @@ async('should attach `await` keyword to custom blocks', () => {
 	});
 
 	let expects = 'var $$x="";'
-	expects += '$$x+=`${await $$2.foo({x:"hello"},$$2)} `;';
-	expects += '$$x+=`${await $$2.bar({y:"world"},$$2)}`;return $$x';
+	expects += '$$x+=`${await $$2["foo"]({x:"hello"},$$2)} `;';
+	expects += '$$x+=`${await $$2["bar"]({y:"world"},$$2)}`;return $$x';
 
 	assert.is(output, expects);
 });
