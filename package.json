@@ -4,8 +4,7 @@
   "repository": "lukeed/tempura",
   "description": "A light, crispy, and delicious template engine",
   "type": "module",
-  "module": "dist/index.mjs",
-  "types": "index.d.ts",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "author": {
     "name": "Luke Edwards",
@@ -16,28 +15,22 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "bun bin && bunx --bun bundt --module",
+    "build": "bun build.ts",
     "test": "bunx --bun uvu test"
   },
   "files": [
-    "*.d.ts",
-    "plugins",
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "default": "./dist/index.mjs"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./plugins": {
-      "types": "./plugins/index.d.ts",
-      "default": "./plugins/index.mjs"
+      "types": "./dist/plugins.d.ts",
+      "default": "./dist/plugins.js"
     },
     "./package.json": "./package.json"
-  },
-  "modes": {
-    "default": "src/index.js",
-    "plugins": "src/plugins.js"
   },
   "keywords": [
     "engine",
@@ -48,10 +41,25 @@
     "hbs"
   ],
   "devDependencies": {
-    "bundt": "1.1.5",
     "esbuild": "0.28.2",
     "rolldown": "1.2.14",
     "uvu": "0.5.1",
     "vite": "8.3.4"
+  },
+  "peerDependencies": {
+    "esbuild": "*",
+    "rolldown": "*",
+    "vite": "*"
+  },
+  "peerDependenciesMeta": {
+    "esbuild": {
+      "optional": true
+    },
+    "rolldown": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    }
   }
 }

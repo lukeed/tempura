@@ -5,7 +5,7 @@ const ESCAPE = /[&"'<]/g, CHARS = {
 	'<': '&lt;',
 };
 
-import { gen } from './$utils';
+import { gen } from './utils.js';
 
 export function esc(value) {
 	value = (value == null) ? '' : '' + value;

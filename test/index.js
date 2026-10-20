@@ -1,6 +1,6 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import * as tempura from '../src/$index';
+import * as tempura from '../src/index.js';
 
 // ---
 

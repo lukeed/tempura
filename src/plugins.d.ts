@@ -1,7 +1,7 @@
 import type { Plugin as EsbuildPlugin } from 'esbuild';
 import type { Plugin as RolldownPlugin } from 'rolldown';
 import type { Plugin as VitePlugin } from 'vite';
-import type { Args, Options } from 'tempura';
+import type { Args, Options } from './index.js';
 
 export type TransformOptions = Options & {
 	/**

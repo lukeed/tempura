@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import * as tempura from 'tempura';
+import * as tempura from './index.js';
 
 function settings(options) {
 	let { filter, values, minify, ...config } = options || {};

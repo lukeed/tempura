@@ -8,7 +8,7 @@ import { build as rolldownBuild } from 'rolldown';
 import { build as viteBuild, createServer } from 'vite';
 import * as plugins from '../src/plugins.js';
 
-const CORE = join(import.meta.dirname, '../src/$index.js');
+const CORE = join(import.meta.dirname, '../src/index.js');
 const PAGE = '{{#expect name}}<p>Hello, {{ name }}!</p>';
 
 async function fixture(page = PAGE) {
@@ -234,7 +234,7 @@ vite('transform :: serves a template as a module in dev', async () => {
 	try {
 		let result = await server.transformRequest('/page.hbs');
 		assert.match(result.code, 'export default function($$3,$$2)');
-		assert.match(result.code, '$index.js');
+		assert.match(result.code, '/src/index.js');
 	} finally {
 		await server.close();
 		await rm(dir, { recursive: true, force: true });

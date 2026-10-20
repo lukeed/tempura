@@ -5,7 +5,4 @@ node_modules
 *.log
 
 # generated
-/src/index.js
-/index.d.ts
-/plugins
 /dist
