@@ -1,7 +1,7 @@
 const ESCAPE = /[&"<]/g, CHARS = {
 	'"': '&quot;',
 	'&': '&amp;',
-	'<': '&lt',
+	'<': '&lt;',
 };
 
 import { gen } from './$utils';
