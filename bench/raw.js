@@ -1,34 +1,34 @@
-const assert = require('uvu/assert');
-const { runner } = require('./util');
+import * as assert from 'uvu/assert';
+import { runner } from './util.js';
 
 console.log('Loading:\n---');
 
 console.time('pug');
-const pug = require('pug');
+const pug = (await import('pug')).default;
 console.timeEnd('pug');
 
 console.time('ejs');
-const ejs = require('ejs');
+const ejs = (await import('ejs')).default;
 console.timeEnd('ejs');
 
 console.time('handlebars');
-const handlebars = require('handlebars');
+const handlebars = (await import('handlebars')).default;
 console.timeEnd('handlebars');
 
 console.time('yeahjs');
-const yeahjs = require('yeahjs');
+const yeahjs = (await import('yeahjs')).default;
 console.timeEnd('yeahjs');
 
 console.time('dot');
-const dot = require('dot');
+const dot = (await import('dot')).default;
 console.timeEnd('dot');
 
 console.time('art-template');
-const art = require('art-template');
+const art = (await import('art-template')).default;
 console.timeEnd('art-template');
 
 console.time('tempura');
-const tempura = require('tempura');
+const tempura = await import('tempura');
 console.timeEnd('tempura');
 
 // ---
@@ -83,9 +83,7 @@ const compilers = {
 					<li>User: {{{ item.user }}} / Web Site: {{{ item.site }}}</li>
 				{{/each}}
 			</ul>
-	`, {
-		format: 'cjs'
-	}),
+	`),
 };
 
 // runner('Compile', compilers, {
