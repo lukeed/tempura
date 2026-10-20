@@ -149,6 +149,10 @@ expect('{{#expect foobar}}', () => {
 	);
 });
 
+expect('should throw on names it cannot read', () => {
+	assert.throws(() => gen('{{#expect foo bar}}'), err => err.message === 'Cannot read the names of "expect": "foo bar"');
+});
+
 expect.run();
 
 // ---
@@ -261,6 +265,10 @@ vars('{{#var foo = truthy(bar) }}', () => {
 	);
 });
 
+vars('should throw without "="', () => {
+	assert.throws(() => gen('{{#var foo}}'), err => err.message === 'Expected "=" in "var" block: "foo"');
+});
+
 vars.run();
 
 // ---
@@ -352,6 +360,13 @@ each('{{#each items as item, idx}}...{{/each}}', () => {
 	assert.is(
 		gen('<ul>{{#each items as item, idx }}<li>hello {{{item.name}}} (#{{{ idx }}})</li>{{/each}}</ul>'),
 		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${item.name} (#${idx})</li>`;}$$x+=`</ul>`;return $$x'
+	);
+});
+
+each('{{#each items as(item, idx)}}...{{/each}}', () => {
+	assert.is(
+		gen('{{#each items as(item, idx)}}<p>{{ idx }}</p>{{/each}}'),
+		gen('{{#each items as (item, idx)}}<p>{{ idx }}</p>{{/each}}')
 	);
 });
 
@@ -674,6 +689,23 @@ stack('unterminated #each block', () => {
 		assert.instance(err, Error);
 		assert.is(err.message, `Unterminated "each" block`);
 	}
+});
+
+stack('should throw on #else or #elif outside of #if', () => {
+	assert.throws(() => gen('{{#else}}x'), err => err.message === 'Unexpected "else" outside of an "if" block');
+	assert.throws(() => gen('{{#elif a}}x'), err => err.message === 'Unexpected "elif" outside of an "if" block');
+	assert.throws(() => gen('{{#each a}}{{#else}}{{/each}}'), err => err.message === 'Unexpected "else" outside of an "if" block');
+});
+
+stack('should throw on #else or #elif after #else', () => {
+	assert.throws(() => gen('{{#if a}}1{{#else}}2{{#elif b}}3{{/if}}'), err => err.message === 'Unexpected "elif" after "else"');
+	assert.throws(() => gen('{{#if a}}1{{#else}}2{{#else}}3{{/if}}'), err => err.message === 'Unexpected "else" after "else"');
+	assert.not.throws(() => gen('{{#if a}}{{#if b}}1{{#else}}2{{/if}}{{#else}}3{{/if}}'));
+	assert.not.throws(() => gen('{{#if a}}1{{#else}}2{{/if}}{{#if b}}3{{#else}}4{{/if}}'));
+});
+
+stack('should throw on a close with no open block', () => {
+	assert.throws(() => gen('{{/if}}'), err => err.message === 'Unexpected "/if" with no open block');
 });
 
 stack.run();
