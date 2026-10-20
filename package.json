@@ -16,8 +16,8 @@
     "node": ">=10"
   },
   "scripts": {
-    "build": "node bin && bundt",
-    "test": "uvu -r esm test"
+    "build": "bun bin && bunx --bun bundt",
+    "test": "bunx --bun uvu test"
   },
   "files": [
     "*.d.ts",
@@ -58,7 +58,6 @@
   ],
   "devDependencies": {
     "bundt": "1.1.5",
-    "esm": "3.2.25",
     "uvu": "0.5.1"
   }
 }
