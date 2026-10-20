@@ -419,16 +419,14 @@ blocks('should allow custom directives', () => {
 	assert.is(output, 'var $$x="";$$x+=`${$$2.include({x:"name",src:true},$$2)}`;return $$x');
 });
 
-blocks('should allow functional replacement', () => {
-	let output = gen(`{{#hello "ignored"}}`, {
-		blocks: {
-			hello() {
-				assert.unreachable('do not call functions during parse');
-			}
-		}
-	});
+blocks('should throw on arguments it cannot read', () => {
+	let hello = () => assert.unreachable('do not call functions during parse');
+	let read = src => () => gen(src, { blocks: { hello } });
+	let error = text => err => err.message === `Cannot read the arguments of "hello": ${JSON.stringify(text)}`;
 
-	assert.is(output, 'var $$x="";$$x+=`${$$2.hello({},$$2)}`;return $$x');
+	assert.throws(read(`{{#hello "ignored"}}`), error('"ignored"'));
+	assert.throws(read(`{{#hello docs=page.section === 'docs'}}`), error("=== 'docs'"));
+	assert.throws(read(`{{#hello a=(1 + 2}}`), error('a=(1 + 2'));
 });
 
 blocks('should allow {{{ raw }}} function callers', () => {
@@ -505,6 +503,19 @@ blocks('arguments parsing : objects', () => {
 	});
 
 	let args = `{foo:{a,b},bar:{ x, y:123 }}`;
+	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
+});
+
+blocks('arguments parsing : groups', () => {
+	let output = gen(`{{#hello docs=(page.section === 'docs') sum=(1 + (2 * 3)) text=(mark === ')' ? "a b" : 'c') m={ a: { b: [1, { c: '}' }] } } }}`, {
+		blocks: {
+			hello() {
+				//
+			}
+		}
+	});
+
+	let args = `{docs:(page.section === 'docs'),sum:(1 + (2 * 3)),text:(mark === ')' ? "a b" : 'c'),m:{ a: { b: [1, { c: '}' }] } }}`;
 	assert.is(output, 'var $$x="";$$x+=`${$$2.hello(' + args + ',$$2)}`;return $$x');
 });
 

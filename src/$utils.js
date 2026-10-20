@@ -1,6 +1,10 @@
 const ENDLINES = /[\r\n]+$/g;
 const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
-const ARGS = /([a-zA-Z$_][^\s=]*)\s*=\s*((["`'])(?:(?=(\\?))\4.)*?\3|{[^}]*}|\[[^\]]*]|\S+)/g;
+const NAME = /[a-zA-Z$_][^\s=]*/y;
+
+function space(char) {
+	return char === ' ' || char === '\t' || char === '\n' || char === '\r';
+}
 
 function quote(src, i) {
 	for (let q = src[i++]; i < src.length; i++) {
@@ -31,6 +35,46 @@ function tag(src, from) {
 			return { index, raw, text: src.substring(index, i + end.length), inner: src.substring(start, i) };
 		}
 	}
+}
+
+function group(src, i) {
+	for (let depth = 0; i < src.length; i++) {
+		let char = src[i];
+		if (char === '"' || char === "'" || char === '`') {
+			i = quote(src, i) - 1;
+			if (i < 0) return -1;
+		} else if (char === '(' || char === '{' || char === '[') {
+			depth++;
+		} else if ((char === ')' || char === '}' || char === ']') && --depth === 0) {
+			return i + 1;
+		}
+	}
+	return -1;
+}
+
+// `a="x" b=1 c=(x === y)` -> ['a:"x"', 'b:1', 'c:(x === y)']
+function args(action, src) {
+	let out = [], i = 0, start, name, end, char;
+	for (;;) {
+		while (space(src[i])) i++;
+		if (i >= src.length) return out;
+		start = i;
+		NAME.lastIndex = i;
+		name = NAME.exec(src);
+		if (!name) break;
+		i = NAME.lastIndex;
+		while (space(src[i])) i++;
+		if (src[i++] !== '=') break;
+		while (space(src[i])) i++;
+		char = src[i];
+		if (char === '"' || char === "'" || char === '`') end = quote(src, i);
+		else if (char === '(' || char === '{' || char === '[') end = group(src, i);
+		else for (end = i; end < src.length && !space(src[end]);) end++;
+		if (end <= i) break;
+		out.push(name[0] + ':' + src.substring(i, end));
+		i = end;
+	}
+	throw new Error(`Cannot read the arguments of "${action}": ${JSON.stringify(src.substring(start).trim())}`);
 }
 
 // $$1 = escape()
@@ -102,9 +146,8 @@ export function gen(input, options) {
 				txt += `}else{`;
 			} else if (action in extra) {
 				if (inner) {
-					tmp = [];
 					// parse arguments, `defer=true` -> `{ defer: true }`
-					while (match = ARGS.exec(inner)) tmp.push(match[1] + ':' + match[2]);
+					tmp = args(action, inner);
 					inner = tmp.length ? '{' + tmp.join() + '}' : '';
 				}
 				inner = inner || '{}';
