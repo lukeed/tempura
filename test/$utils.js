@@ -25,43 +25,43 @@ const values = suite('{{ values }}');
 values('{{ value }}', () => {
 	assert.is(
 		gen('{{ value }}'),
-		'var $$x=`${$$1(value)}`;return $$x'
+		'var $$x=""+$$1(value);return $$x'
 	);
 
 	assert.is(
 		gen('{{value }}'),
-		'var $$x=`${$$1(value)}`;return $$x'
+		'var $$x=""+$$1(value);return $$x'
 	);
 
 	assert.is(
 		gen('{{ value}}'),
-		'var $$x=`${$$1(value)}`;return $$x'
+		'var $$x=""+$$1(value);return $$x'
 	);
 
 	assert.is(
 		gen('{{value}}'),
-		'var $$x=`${$$1(value)}`;return $$x'
+		'var $$x=""+$$1(value);return $$x'
 	);
 });
 
 values('{{ foo.bar }}', () => {
 	assert.is(
 		gen('{{ foo.bar }}'),
-		'var $$x=`${$$1(foo.bar)}`;return $$x'
+		'var $$x=""+$$1(foo.bar);return $$x'
 	);
 });
 
 values('{{ foo["bar"] }}', () => {
 	assert.is(
 		gen('{{ foo["bar"] }}'),
-		'var $$x=`${$$1(foo["bar"])}`;return $$x'
+		'var $$x=""+$$1(foo["bar"]);return $$x'
 	);
 });
 
 values('<h1>{{ foo.bar }} ...</h1>', () => {
 	assert.is(
 		gen('<h1>{{ foo.bar }} <span>howdy</span></h1>'),
-		'var $$x=`<h1>${$$1(foo.bar)} <span>howdy</span></h1>`;return $$x'
+		'var $$x="<h1>"+$$1(foo.bar)+" <span>howdy</span></h1>";return $$x'
 	);
 });
 
@@ -74,43 +74,43 @@ const raws = suite('{{{ raw }}}');
 raws('{{ value }}', () => {
 	assert.is(
 		gen('{{{ value }}}'),
-		'var $$x=`${value}`;return $$x'
+		'var $$x=""+(value);return $$x'
 	);
 
 	assert.is(
 		gen('{{{value }}}'),
-		'var $$x=`${value}`;return $$x'
+		'var $$x=""+(value);return $$x'
 	);
 
 	assert.is(
 		gen('{{{ value}}}'),
-		'var $$x=`${value}`;return $$x'
+		'var $$x=""+(value);return $$x'
 	);
 
 	assert.is(
 		gen('{{{value}}}'),
-		'var $$x=`${value}`;return $$x'
+		'var $$x=""+(value);return $$x'
 	);
 });
 
 raws('{{{ foo.bar }}}', () => {
 	assert.is(
 		gen('{{{ foo.bar }}}'),
-		'var $$x=`${foo.bar}`;return $$x'
+		'var $$x=""+(foo.bar);return $$x'
 	);
 });
 
 raws('{{{ foo["bar"] }}}', () => {
 	assert.is(
 		gen('{{{ foo["bar"] }}}'),
-		'var $$x=`${foo["bar"]}`;return $$x'
+		'var $$x=""+(foo["bar"]);return $$x'
 	);
 });
 
 raws('<h1>{{{ foo.bar }}} ...</h1>', () => {
 	assert.is(
 		gen('<h1>{{{ foo.bar }}} <span>howdy</span></h1>'),
-		'var $$x=`<h1>${foo.bar} <span>howdy</span></h1>`;return $$x'
+		'var $$x="<h1>"+(foo.bar)+" <span>howdy</span></h1>";return $$x'
 	);
 });
 
@@ -162,35 +162,35 @@ const control = suite('#if');
 control('{{#if isActive}}...{{/if}}', () => {
 	assert.is(
 		gen('{{#if isActive}}<p>yes</p>{{/if}}'),
-		'var $$x="";if(isActive){$$x+=`<p>yes</p>`;}return $$x'
+		'var $$x="";if(isActive){$$x+="<p>yes</p>";}return $$x'
 	);
 });
 
 control('{{#if foo.bar}}...{{#else}}...{{/if}}', () => {
 	assert.is(
 		gen('{{#if foo.bar}}<p>yes</p>{{#else}}<p>no {{ way }}</p>{{/if}}'),
-		'var $$x="";if(foo.bar){$$x+=`<p>yes</p>`;}else{$$x+=`<p>no ${$$1(way)}</p>`;}return $$x'
+		'var $$x="";if(foo.bar){$$x+="<p>yes</p>";}else{$$x+="<p>no "+$$1(way)+"</p>";}return $$x'
 	);
 });
 
 control('{{#if foo == 0}}...{{#else}}...{{/if}}', () => {
 	assert.is(
 		gen('{{#if foo == 0}}<p>zero</p>{{#else}}<p>not zero</p>{{/if}}'),
-		'var $$x="";if(foo == 0){$$x+=`<p>zero</p>`;}else{$$x+=`<p>not zero</p>`;}return $$x'
+		'var $$x="";if(foo == 0){$$x+="<p>zero</p>";}else{$$x+="<p>not zero</p>";}return $$x'
 	);
 });
 
 control('{{#if isActive}}...{{#elif isMuted}}...{{#else}}...{{/if}}', () => {
 	assert.is(
 		gen('{{#if isActive}}<p>active</p>{{#elif isMuted}}<p>muted</p>{{#else}}<p>inactive</p>{{/if}}'),
-		'var $$x="";if(isActive){$$x+=`<p>active</p>`;}else if(isMuted){$$x+=`<p>muted</p>`;}else{$$x+=`<p>inactive</p>`;}return $$x'
+		'var $$x="";if(isActive){$$x+="<p>active</p>";}else if(isMuted){$$x+="<p>muted</p>";}else{$$x+="<p>inactive</p>";}return $$x'
 	);
 });
 
 control('{{#if isActive}}...{{#elif isMuted}}...{{/if}}', () => {
 	assert.is(
 		gen('{{#if isActive    }}<p>active</p>{{#elif isMuted}}<p>muted</p>{{/if}}'),
-		'var $$x="";if(isActive){$$x+=`<p>active</p>`;}else if(isMuted){$$x+=`<p>muted</p>`;}return $$x'
+		'var $$x="";if(isActive){$$x+="<p>active</p>";}else if(isMuted){$$x+="<p>muted</p>";}return $$x'
 	);
 });
 
@@ -203,65 +203,65 @@ const vars = suite('#vars');
 vars('{{#var foo = "world" }}', () => {
 	assert.is(
 		gen('{{#var foo = "world"}}<p>hello {{ foo }}</p>'),
-		'var $$x="";var foo="world";$$x+=`<p>hello ${$$1(foo)}</p>`;return $$x'
+		'var $$x="";var foo="world";$$x+="<p>hello "+$$1(foo)+"</p>";return $$x'
 	);
 
 	assert.is(
 		gen('{{#var foo = "world";}}<p>hello {{ foo }}</p>'),
-		'var $$x="";var foo="world";$$x+=`<p>hello ${$$1(foo)}</p>`;return $$x'
+		'var $$x="";var foo="world";$$x+="<p>hello "+$$1(foo)+"</p>";return $$x'
 	);
 });
 
 vars('{{#var foo = 1+2 }}', () => {
 	assert.is(
 		gen('{{#var foo = 1+2}}<p>hello {{ foo }}</p>'),
-		'var $$x="";var foo=1+2;$$x+=`<p>hello ${$$1(foo)}</p>`;return $$x'
+		'var $$x="";var foo=1+2;$$x+="<p>hello "+$$1(foo)+"</p>";return $$x'
 	);
 
 	assert.is(
 		gen('{{#var foo = 1+2;}}<p>hello {{ foo }}</p>'),
-		'var $$x="";var foo=1+2;$$x+=`<p>hello ${$$1(foo)}</p>`;return $$x'
+		'var $$x="";var foo=1+2;$$x+="<p>hello "+$$1(foo)+"</p>";return $$x'
 	);
 });
 
 vars('{{#var foo = {...} }}', () => {
 	assert.is(
 		gen('{{#var name = { first: "luke" } }}<p>hello {{ name.first }}</p>'),
-		'var $$x="";var name={ first: "luke" };$$x+=`<p>hello ${$$1(name.first)}</p>`;return $$x'
+		'var $$x="";var name={ first: "luke" };$$x+="<p>hello "+$$1(name.first)+"</p>";return $$x'
 	);
 
 	assert.is(
 		gen('{{#var name = { first:"luke" }; }}<p>hello {{ name.first }}</p>'),
-		'var $$x="";var name={ first:"luke" };$$x+=`<p>hello ${$$1(name.first)}</p>`;return $$x'
+		'var $$x="";var name={ first:"luke" };$$x+="<p>hello "+$$1(name.first)+"</p>";return $$x'
 	);
 });
 
 vars('{{#var foo = [...] }}', () => {
 	assert.is(
 		gen('{{#var name = ["luke"] }}<p>hello {{ name[0] }}</p>'),
-		'var $$x="";var name=["luke"];$$x+=`<p>hello ${$$1(name[0])}</p>`;return $$x'
+		'var $$x="";var name=["luke"];$$x+="<p>hello "+$$1(name[0])+"</p>";return $$x'
 	);
 
 	assert.is(
 		gen('{{#var name = ["luke"]; }}<p>hello {{ name[0] }}</p>'),
-		'var $$x="";var name=["luke"];$$x+=`<p>hello ${$$1(name[0])}</p>`;return $$x'
+		'var $$x="";var name=["luke"];$$x+="<p>hello "+$$1(name[0])+"</p>";return $$x'
 	);
 
 	assert.is(
 		gen('{{#var name = ["luke"]; }}<p>hello {{{ name[0] }}}</p>'),
-		'var $$x="";var name=["luke"];$$x+=`<p>hello ${name[0]}</p>`;return $$x'
+		'var $$x="";var name=["luke"];$$x+="<p>hello "+(name[0])+"</p>";return $$x'
 	);
 });
 
 vars('{{#var foo = truthy(bar) }}', () => {
 	assert.is(
 		gen('{{#var foo = truthy(bar)}}{{#if foo != 0}}<p>yes</p>{{/if}}'),
-		'var $$x="";var foo=truthy(bar);if(foo != 0){$$x+=`<p>yes</p>`;}return $$x'
+		'var $$x="";var foo=truthy(bar);if(foo != 0){$$x+="<p>yes</p>";}return $$x'
 	);
 
 	assert.is(
 		gen('{{#var foo = truthy(bar); }}{{#if foo != 0}}<p>yes</p>{{ /if }}'),
-		'var $$x="";var foo=truthy(bar);if(foo != 0){$$x+=`<p>yes</p>`;}return $$x'
+		'var $$x="";var foo=truthy(bar);if(foo != 0){$$x+="<p>yes</p>";}return $$x'
 	);
 });
 
@@ -308,58 +308,58 @@ const each = suite('#each');
 each('{{#each items}}...{{/each}}', () => {
 	assert.is(
 		gen('{{#each items}}<p>hello</p>{{/each}}'),
-		'var $$x="";for(let i=0,$$a=items;i<$$a.length;i++){$$x+=`<p>hello</p>`;}return $$x'
+		'var $$x="";for(let i=0,$$a=items;i<$$a.length;i++){$$x+="<p>hello</p>";}return $$x'
 	);
 });
 
 each('{{#each items as item}}...{{/each}}', () => {
 	assert.is(
 		gen('{{#each items as item}}<p>hello {{item.name}}</p>{{/each}}'),
-		'var $$x="";for(let i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];$$x+=`<p>hello ${$$1(item.name)}</p>`;}return $$x'
+		'var $$x="";for(let i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];$$x+="<p>hello "+$$1(item.name)+"</p>";}return $$x'
 	);
 
 	assert.is(
 		gen('{{#each items as (item) }}<p>hello {{item.name}}</p>{{/each}}'),
-		'var $$x="";for(let i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];$$x+=`<p>hello ${$$1(item.name)}</p>`;}return $$x'
+		'var $$x="";for(let i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];$$x+="<p>hello "+$$1(item.name)+"</p>";}return $$x'
 	);
 
 	assert.is(
 		gen('{{#each items as (item) }}<p>hello {{{item.name}}}</p>{{/each}}'),
-		'var $$x="";for(let i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];$$x+=`<p>hello ${item.name}</p>`;}return $$x'
+		'var $$x="";for(let i=0,item,$$a=items;i<$$a.length;i++){item=$$a[i];$$x+="<p>hello "+(item.name)+"</p>";}return $$x'
 	);
 });
 
 each('{{#each items as (item,idx)}}...{{/each}}', () => {
 	assert.is(
 		gen('<ul>{{#each items as (item,idx)}}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${$$1(item.name)} (#${$$1(idx)})</li>`;}$$x+=`</ul>`;return $$x'
+		'var $$x="<ul>";for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+="<li>hello "+$$1(item.name)+" (#"+$$1(idx)+")</li>";}$$x+="</ul>";return $$x'
 	);
 
 	assert.is(
 		gen('<ul>{{#each items as (item, idx) }}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${$$1(item.name)} (#${$$1(idx)})</li>`;}$$x+=`</ul>`;return $$x'
+		'var $$x="<ul>";for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+="<li>hello "+$$1(item.name)+" (#"+$$1(idx)+")</li>";}$$x+="</ul>";return $$x'
 	);
 
 	assert.is(
 		gen('<ul>{{#each items as (item, idx) }}<li>hello {{item.name}} (#{{{ idx }}})</li>{{/each}}</ul>'),
-		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${$$1(item.name)} (#${idx})</li>`;}$$x+=`</ul>`;return $$x'
+		'var $$x="<ul>";for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+="<li>hello "+$$1(item.name)+" (#"+(idx)+")</li>";}$$x+="</ul>";return $$x'
 	);
 });
 
 each('{{#each items as item, idx}}...{{/each}}', () => {
 	assert.is(
 		gen('<ul>{{#each items as item,idx}}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${$$1(item.name)} (#${$$1(idx)})</li>`;}$$x+=`</ul>`;return $$x'
+		'var $$x="<ul>";for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+="<li>hello "+$$1(item.name)+" (#"+$$1(idx)+")</li>";}$$x+="</ul>";return $$x'
 	);
 
 	assert.is(
 		gen('<ul>{{#each items as item, idx }}<li>hello {{item.name}} (#{{ idx }})</li>{{/each}}</ul>'),
-		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${$$1(item.name)} (#${$$1(idx)})</li>`;}$$x+=`</ul>`;return $$x'
+		'var $$x="<ul>";for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+="<li>hello "+$$1(item.name)+" (#"+$$1(idx)+")</li>";}$$x+="</ul>";return $$x'
 	);
 
 	assert.is(
 		gen('<ul>{{#each items as item, idx }}<li>hello {{{item.name}}} (#{{{ idx }}})</li>{{/each}}</ul>'),
-		'var $$x=`<ul>`;for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+=`<li>hello ${item.name} (#${idx})</li>`;}$$x+=`</ul>`;return $$x'
+		'var $$x="<ul>";for(let idx=0,item,$$a=items;idx<$$a.length;idx++){item=$$a[idx];$$x+="<li>hello "+(item.name)+" (#"+(idx)+")</li>";}$$x+="</ul>";return $$x'
 	);
 });
 
@@ -378,35 +378,35 @@ const loose = suite('options.loose');
 
 loose('should not declare unknown vars by default', () => {
 	let output = gen('{{ hello }}');
-	assert.is(output, 'var $$x=`${$$1(hello)}`;return $$x');
+	assert.is(output, 'var $$x=""+$$1(hello);return $$x');
 });
 
 loose('should prepare surprise vars', () => {
 	let foo = gen('{{ hello }}', { loose: true });
-	assert.is(foo, 'var{hello}=$$3,$$x=`${$$1(hello)}`;return $$x');
+	assert.is(foo, 'var{hello}=$$3,$$x=""+$$1(hello);return $$x');
 
 	let bar = gen('{{{ hello+world }}}', { loose: true });
-	assert.is(bar, 'var{hello,world}=$$3,$$x=`${hello+world}`;return $$x');
+	assert.is(bar, 'var{hello,world}=$$3,$$x=""+(hello+world);return $$x');
 
 	let baz = gen('{{{ hello / world }}}', { loose: true });
-	assert.is(baz, 'var{hello,world}=$$3,$$x=`${hello / world}`;return $$x');
+	assert.is(baz, 'var{hello,world}=$$3,$$x=""+(hello / world);return $$x');
 });
 
 loose('should ignore non-identifiers', () => {
 	let foo = gen('{{{ "123" }}}', { loose: true });
-	assert.is(foo, 'var $$x=`${"123"}`;return $$x');
+	assert.is(foo, 'var $$x=""+("123");return $$x');
 
 	let bar = gen('{{{ 123 }}}', { loose: true });
-	assert.is(bar, 'var $$x=`${123}`;return $$x');
+	assert.is(bar, 'var $$x=""+(123);return $$x');
 
 	let baz = gen('{{{ hello == 123 }}}', { loose: true });
-	assert.is(baz, 'var{hello}=$$3,$$x=`${hello == 123}`;return $$x');
+	assert.is(baz, 'var{hello}=$$3,$$x=""+(hello == 123);return $$x');
 });
 
 loose('should not expect keywords', () => {
 	assert.is(
 		gen('{{ x === null || typeof y }}{{ z instanceof Date }}{{ void 0 }}{{ "a" in w }}{{ new Date }}{{ true }}{{ this }}', { loose: true }),
-		'var{x,y,z,Date,w}=$$3,$$x=`${$$1(x === null || typeof y)}${$$1(z instanceof Date)}${$$1(void 0)}${$$1("a" in w)}${$$1(new Date)}${$$1(true)}${$$1(this)}`;return $$x'
+		'var{x,y,z,Date,w}=$$3,$$x=""+$$1(x === null || typeof y)+$$1(z instanceof Date)+$$1(void 0)+$$1("a" in w)+$$1(new Date)+$$1(true)+$$1(this);return $$x'
 	);
 });
 
@@ -438,7 +438,7 @@ blocks('should allow custom directives', () => {
 	});
 
 	assert.type(output, 'string');
-	assert.is(output, 'var $$x="";$$x+=`${$$2["include"]({x:"name",src:true},$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["include"]({x:"name",src:true},$$2));return $$x');
 });
 
 blocks('should throw on arguments it cannot read', () => {
@@ -460,7 +460,7 @@ blocks('should allow {{{ raw }}} function callers', () => {
 		}
 	});
 
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"]({foo:"bar"},$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"]({foo:"bar"},$$2));return $$x');
 });
 
 blocks('should parse arguments for function callers', () => {
@@ -473,7 +473,7 @@ blocks('should parse arguments for function callers', () => {
 	});
 
 	let args = `{foo:"foo",arr:["a b c", 123],bar:'bar',o:{ foo, bar },hi:howdy}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"](' + args + ',$$2));return $$x');
 });
 
 blocks('arguments parsing : strings', () => {
@@ -486,7 +486,7 @@ blocks('arguments parsing : strings', () => {
 	});
 
 	let args = `{foo:"foo",bar:'bar',baz:\`baz\`,hello:"foo 'bar' baz"}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"](' + args + ',$$2));return $$x');
 });
 
 blocks('arguments parsing : booleans', () => {
@@ -499,7 +499,7 @@ blocks('arguments parsing : booleans', () => {
 	});
 
 	let args = `{foo:true,bar:true,baz:false,hello:false}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"](' + args + ',$$2));return $$x');
 });
 
 blocks('arguments parsing : arrays', () => {
@@ -512,7 +512,7 @@ blocks('arguments parsing : arrays', () => {
 	});
 
 	let args = `{foo:[1,2,3],bar:[1, 2,  3],baz:['foo','baz']}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"](' + args + ',$$2));return $$x');
 });
 
 blocks('arguments parsing : objects', () => {
@@ -525,7 +525,7 @@ blocks('arguments parsing : objects', () => {
 	});
 
 	let args = `{foo:{a,b},bar:{ x, y:123 }}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"](' + args + ',$$2));return $$x');
 });
 
 blocks('arguments parsing : groups', () => {
@@ -538,7 +538,7 @@ blocks('arguments parsing : groups', () => {
 	});
 
 	let args = `{docs:(page.section === 'docs'),sum:(1 + (2 * 3)),text:(mark === ')' ? "a b" : 'c'),m:{ a: { b: [1, { c: '}' }] } }}`;
-	assert.is(output, 'var $$x="";$$x+=`${$$2["hello"](' + args + ',$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["hello"](' + args + ',$$2));return $$x');
 });
 
 blocks('should allow ".", "/", and one-character block names', () => {
@@ -546,7 +546,7 @@ blocks('should allow ".", "/", and one-character block names', () => {
 		blocks: { a() {}, 'a.b'() {}, 'a/b'() {} }
 	});
 
-	assert.is(output, 'var $$x="";$$x+=`${$$2["a"]({},$$2)}`;$$x+=`${$$2["a.b"]({},$$2)}`;$$x+=`${$$2["a/b"]({},$$2)}`;return $$x');
+	assert.is(output, 'var $$x="";$$x+=""+($$2["a"]({},$$2));$$x+=""+($$2["a.b"]({},$$2));$$x+=""+($$2["a/b"]({},$$2));return $$x');
 });
 
 blocks('should still throw on unknown block', () => {
@@ -575,7 +575,7 @@ blocks('should allow multi-line arguments', () => {
 		{ blocks }
 	);
 
-	let expects = 'var $$x="";$$x+=`${$$2["script"]({type:"module",src:"foobar.mjs",async:true},$$2)}`;return $$x';
+	let expects = 'var $$x="";$$x+=""+($$2["script"]({type:"module",src:"foobar.mjs",async:true},$$2));return $$x';
 	assert.is(output, expects);
 
 	output = gen(
@@ -597,20 +597,20 @@ const props = suite('options.props');
 
 props('should take the place of `#expect` decls', () => {
 	let foo = gen('{{ url }}', { props: ['url'] });
-	assert.is(foo, 'var{url}=$$3,$$x=`${$$1(url)}`;return $$x');
+	assert.is(foo, 'var{url}=$$3,$$x=""+$$1(url);return $$x');
 
 	let bar = gen('{{{ a + b }}}', { props: ['a', 'b'] });
-	assert.is(bar, 'var{a,b}=$$3,$$x=`${a + b}`;return $$x');
+	assert.is(bar, 'var{a,b}=$$3,$$x=""+(a + b);return $$x');
 });
 
 props('should dedupe with `#expect` repeats', () => {
 	let foo = gen('{{#expect foo}}{{{ foo }}}', { props: ['foo'] });
-	assert.is(foo, 'var{foo}=$$3,$$x="";$$x+=`${foo}`;return $$x');
+	assert.is(foo, 'var{foo}=$$3,$$x="";$$x+=""+(foo);return $$x');
 });
 
 props('should work with `loose` enabled', () => {
 	let foo = gen('{{{ foo }}}', { props: ['bar'], loose: true });
-	assert.is(foo, 'var{bar,foo}=$$3,$$x=`${foo}`;return $$x');
+	assert.is(foo, 'var{bar,foo}=$$3,$$x=""+(foo);return $$x');
 });
 
 props.run();
@@ -733,8 +733,8 @@ async('should attach `await` keyword to custom blocks', () => {
 	});
 
 	let expects = 'var $$x="";'
-	expects += '$$x+=`${await $$2["foo"]({x:"hello"},$$2)} `;';
-	expects += '$$x+=`${await $$2["bar"]({y:"world"},$$2)}`;return $$x';
+	expects += '$$x+=""+(await $$2["foo"]({x:"hello"},$$2))+" ";';
+	expects += '$$x+=""+(await $$2["bar"]({y:"world"},$$2));return $$x';
 
 	assert.is(output, expects);
 });

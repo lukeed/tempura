@@ -341,6 +341,16 @@ compile('should print backticks, backslashes, and "${" in text as they are', () 
 	assert.is(tempura.compile(text + '{{ v }}', { props: ['v'] })({ v: '`' }), text + '`');
 });
 
+compile('should join number values, not add them', () => {
+	let render = tempura.compile('{{{ a }}}{{{ b }}}|{{ a }}{{ b }}|{{#if true}}{{{ a }}}{{{ b }}}{{/if}}', { props: ['a', 'b'] });
+	assert.is(render({ a: 1, b: 2 }), '12|12|12');
+});
+
+compile('should print quotes, line breaks, and U+2028 in text as they are', () => {
+	let text = `"a" 'b' \\ \u2028 \u2029\n\tc`;
+	assert.is(tempura.compile(text + '{{ v }}', { props: ['v'] })({ v: 1 }), text + '1');
+});
+
 compile.run();
 
 // ---
