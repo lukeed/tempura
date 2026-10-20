@@ -1,6 +1,6 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import { gen } from '../src/utils.js';
+import { gen } from '../src/utils.ts';
 
 const API = suite('API');
 

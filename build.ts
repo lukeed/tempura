@@ -10,22 +10,22 @@ await rm(DIST, { recursive: true, force: true });
 await mkdir(DIST, { recursive: true });
 
 let bundle = await Bun.build({
-	entrypoints: [join(SRC, 'index.js')],
+	entrypoints: [join(SRC, 'index.ts')],
 	outdir: DIST,
 	format: 'esm',
 	target: 'browser',
 });
 
 if (!bundle.success) {
-	throw new AggregateError(bundle.logs, 'Failed to bundle "src/index.js"');
+	throw new AggregateError(bundle.logs, 'Failed to bundle "src/index.ts"');
 }
 
-let transpiler = new Bun.Transpiler({ loader: 'js' });
-let plugins = await Bun.file(join(SRC, 'plugins.js')).text();
+let transpiler = new Bun.Transpiler({ loader: 'ts' });
+let plugins = await Bun.file(join(SRC, 'plugins.ts')).text();
 await Bun.write(join(DIST, 'plugins.js'), transpiler.transformSync(plugins));
 
-await copyFile(join(SRC, 'index.d.ts'), join(DIST, 'index.d.ts'));
-await copyFile(join(SRC, 'plugins.d.ts'), join(DIST, 'plugins.d.ts'));
+await copyFile(join(SRC, 'types/index.d.ts'), join(DIST, 'index.d.ts'));
+await copyFile(join(SRC, 'types/plugins.d.ts'), join(DIST, 'plugins.d.ts'));
 
 function size(bytes: number): string {
 	return bytes < 1e3 ? `${bytes} B` : `${(bytes / 1e3).toFixed(2)} kB`;

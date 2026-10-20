@@ -1,3 +1,5 @@
+import type { Options } from './types/index.d.ts';
+
 const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const NAME = /[a-zA-Z$_][^\s=]*/y;
 const IDENT = /^[a-zA-Z$_][\w$]*$/;
@@ -6,25 +8,27 @@ const LITERAL = /[\\`]|\$\{/g;
 const EACH = /\sas[\s(]/;
 const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
 
-function text(src, from, to) {
+type Tag = { index: number; raw: boolean; text: string; inner: string };
+
+function text(src: string, from: number, to: number): string {
 	let end = to;
 	while (end > from && (src.charCodeAt(end - 1) === 10 || src.charCodeAt(end - 1) === 13)) end--;
 	return src.substring(from, end);
 }
 
-function name(code, more) {
+function name(code: number, more: boolean): boolean {
 	return (code >= 97 && code <= 122) || (code >= 65 && code <= 90) || (code >= 48 && code <= 57) || code === 95 || (more && (code === 46 || code === 47));
 }
 
-function space(char) {
+function space(char: string | undefined): boolean {
 	return char === ' ' || char === '\t' || char === '\n' || char === '\r';
 }
 
-function quoted(code) {
+function quoted(code: number): boolean {
 	return code === 34 || code === 39 || code === 96;
 }
 
-function quote(src, i) {
+function quote(src: string, i: number): number {
 	for (let q = src.charCodeAt(i++), code; i < src.length; i++) {
 		code = src.charCodeAt(i);
 		if (code === BACKSLASH) i++;
@@ -34,7 +38,7 @@ function quote(src, i) {
 }
 
 // The next {{ … }} or {{{ … }}} from `from`; it closes outside quotes and nested braces, except in a {{! comment }}.
-function tag(src, from) {
+function tag(src: string, from: number): Tag | undefined {
 	let index = src.indexOf('{{', from);
 	if (index === -1) return;
 	let raw = src.charCodeAt(index + 2) === OPEN;
@@ -59,7 +63,7 @@ function tag(src, from) {
 	}
 }
 
-function group(src, i) {
+function group(src: string, i: number): number {
 	for (let depth = 0; i < src.length; i++) {
 		let char = src[i];
 		if (char === '"' || char === "'" || char === '`') {
@@ -75,8 +79,8 @@ function group(src, i) {
 }
 
 // `a="x" b=1 c=(x === y)` -> ['a:"x"', 'b:1', 'c:(x === y)']
-function args(action, src) {
-	let out = [], i = 0, start, name, end, char;
+function args(action: string, src: string): string[] {
+	let out: string[] = [], i = 0, start = 0, name: RegExpExecArray | null, end: number, char: string | undefined;
 	for (;;) {
 		while (space(src[i])) i++;
 		if (i >= src.length) return out;
@@ -102,14 +106,16 @@ function args(action, src) {
 // $$1 = escape()
 // $$2 = extra blocks
 // $$3 = template values
-export function gen(input, options) {
-	options = options || {};
-
-	let char, num, action, tmp;
+/**
+ * Generate the body of a template function from its source.
+ * @example new Function('$$1', '$$2', '$$3', gen('<p>{{ name }}</p>', { props: ['name'] }))
+ */
+export function gen(input: string, options: Options = {}): string {
+	let char: string, num: number, action: string, chunk: string;
 	let last = 0;
-	let wip='', txt='', match, inner;
+	let wip='', txt='', match: Tag | undefined, inner: string;
 
-	let extra=options.blocks||{}, stack=[], ended=new Set;
+	let extra=options.blocks||{}, stack: string[]=[], ended=new Set<number>();
 	let initials = new Set(options.props||[]);
 	let literal = input.includes('`') || input.includes('\\') || input.includes('${');
 
@@ -123,8 +129,8 @@ export function gen(input, options) {
 	}
 
 	while (match = tag(input, last)) {
-		tmp = text(input, last, match.index);
-		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
+		chunk = text(input, last, match.index);
+		wip += literal ? chunk.replace(LITERAL, '\\$&') : chunk;
 		last = match.index + match.text.length;
 
 		inner = match.inner.trim();
@@ -134,12 +140,13 @@ export function gen(input, options) {
 			// comment, continue
 		} else if (char === '#') {
 			close();
+			let end: number;
 			for (num = 1; space(inner[num]);) num++;
-			for (tmp = num; tmp < inner.length && name(inner.charCodeAt(tmp), tmp > num);) tmp++;
-			if (tmp === num) throw new Error(`Cannot read the name of block: ${JSON.stringify(match.text)}`);
-			action = inner.substring(num, tmp);
-			while (space(inner[tmp])) tmp++;
-			inner = inner.substring(tmp);
+			for (end = num; end < inner.length && name(inner.charCodeAt(end), end > num);) end++;
+			if (end === num) throw new Error(`Cannot read the name of block: ${JSON.stringify(match.text)}`);
+			action = inner.substring(num, end);
+			while (space(inner[end])) end++;
+			inner = inner.substring(end);
 
 			if (action === 'expect') {
 				inner.split(/[\n\r\s\t]*,[\n\r\s\t]*/g).forEach(key => {
@@ -149,9 +156,9 @@ export function gen(input, options) {
 			} else if (action === 'var') {
 				num = inner.indexOf('=');
 				if (!~num) throw new Error(`Expected "=" in "var" block: ${JSON.stringify(inner)}`);
-				tmp = inner.substring(0, num++).trim();
+				let key = inner.substring(0, num++).trim();
 				inner = inner.substring(num).trim().replace(/[;]$/, '');
-				txt += `var ${tmp}=${inner};`;
+				txt += `var ${key}=${inner};`;
 			} else if (action === 'each') {
 				// Block-scoped `let` so nested `#each` loops don't clobber the
 				// outer loop's iteration variable or accumulator. Previous
@@ -163,10 +170,10 @@ export function gen(input, options) {
 				if (!~num) {
 					txt += `for(let i=0,$$a=${inner};i<$$a.length;i++){`;
 				} else {
-					tmp = inner.substring(0, num).trim();
+					let list = inner.substring(0, num).trim();
 					inner = inner.substring(num + 3).trim();
 					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
-					txt += `for(let ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
+					txt += `for(let ${idx}=0,${item},$$a=${list};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
 				}
 			} else if (action === 'if') {
 				txt += `if(${inner}){`;
@@ -183,12 +190,11 @@ export function gen(input, options) {
 			} else if (action in extra) {
 				if (inner) {
 					// parse arguments, `defer=true` -> `{ defer: true }`
-					tmp = args(action, inner);
-					inner = tmp.length ? '{' + tmp.join() + '}' : '';
+					let pairs = args(action, inner);
+					inner = pairs.length ? '{' + pairs.join() + '}' : '';
 				}
 				inner = inner || '{}';
-				tmp = options.async ? 'await ' : '';
-				wip += '${' + tmp + '$$2["' + action + '"](' + inner + ',$$2)}';
+				wip += '${' + (options.async ? 'await ' : '') + '$$2["' + action + '"](' + inner + ',$$2)}';
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}
@@ -196,16 +202,16 @@ export function gen(input, options) {
 			action = inner.substring(1);
 			if (!stack.length) throw new Error(`Unexpected "/${action}" with no open block`);
 			ended.delete(stack.length);
-			inner = stack.pop();
+			let open = stack.pop();
 			close();
-			if (action === inner) txt += '}';
-			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
+			if (action === open) txt += '}';
+			else throw new Error(`Expected to close "${open}" block; closed "${action}" instead`);
 		} else {
 			if (match.raw) wip += '${' + inner + '}'; // {{{ raw }}}
 			else wip += '${$$1(' + inner + ')}';
 			if (options.loose) {
-				while (tmp = VAR.exec(inner)) {
-					if (!KEYWORDS.test(tmp[1])) initials.add(tmp[1]);
+				for (let found: RegExpExecArray | null; found = VAR.exec(inner);) {
+					if (!KEYWORDS.test(found[1])) initials.add(found[1]);
 				}
 			}
 		}
@@ -216,12 +222,12 @@ export function gen(input, options) {
 	}
 
 	if (last < input.length) {
-		tmp = text(input, last, input.length);
-		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
+		chunk = text(input, last, input.length);
+		wip += literal ? chunk.replace(LITERAL, '\\$&') : chunk;
 	}
 
 	close();
 
-	tmp = initials.size ? `{${ [...initials].join() }}=$$3,$$x` : ' $$x';
-	return `var${tmp + txt}return $$x`;
+	let head = initials.size ? `{${ [...initials].join() }}=$$3,$$x` : ' $$x';
+	return `var${head + txt}return $$x`;
 }
