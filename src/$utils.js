@@ -1,6 +1,7 @@
 const ENDLINES = /[\r\n]+$/g;
 const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const NAME = /[a-zA-Z$_][^\s=]*/y;
+const IDENT = /^[a-zA-Z$_][\w$]*$/;
 const KEYWORDS = new Set('await delete false in instanceof new null this true typeof undefined void yield'.split(' '));
 const LITERAL = /[\\`]|\$\{/g;
 
@@ -89,7 +90,7 @@ export function gen(input, options) {
 	let last = 0;
 	let wip='', txt='', match, inner;
 
-	let extra=options.blocks||{}, stack=[];
+	let extra=options.blocks||{}, stack=[], ended=new Set;
 	let initials = new Set(options.props||[]);
 
 	function close() {
@@ -116,10 +117,12 @@ export function gen(input, options) {
 
 			if (action === 'expect') {
 				inner.split(/[\n\r\s\t]*,[\n\r\s\t]*/g).forEach(key => {
+					if (!IDENT.test(key)) throw new Error(`Cannot read the names of "expect": ${JSON.stringify(inner)}`);
 					initials.add(key);
 				});
 			} else if (action === 'var') {
 				num = inner.indexOf('=');
+				if (!~num) throw new Error(`Expected "=" in "var" block: ${JSON.stringify(inner)}`);
 				tmp = inner.substring(0, num++).trim();
 				inner = inner.substring(num).trim().replace(/[;]$/, '');
 				txt += `var ${tmp}=${inner};`;
@@ -129,23 +132,28 @@ export function gen(input, options) {
 				// `var`-based output hoisted `i` and `$$a` to function scope,
 				// so an inner `#each` reassigned them and the outer loop
 				// terminated after one pass.
-				num = inner.indexOf(' as ');
+				num = inner.search(/\sas[\s(]/);
 				stack.push(action);
 				if (!~num) {
 					txt += `for(let i=0,$$a=${inner};i<$$a.length;i++){`;
 				} else {
 					tmp = inner.substring(0, num).trim();
-					inner = inner.substring(num + 4).trim();
+					inner = inner.substring(num + 3).trim();
 					let [item, idx='i'] = inner.replace(/[()\s]/g, '').split(','); // (item, idx?)
 					txt += `for(let ${idx}=0,${item},$$a=${tmp};${idx}<$$a.length;${idx}++){${item}=$$a[${idx}];`;
 				}
 			} else if (action === 'if') {
 				txt += `if(${inner}){`;
 				stack.push(action);
-			} else if (action === 'elif') {
-				txt += `}else if(${inner}){`;
-			} else if (action === 'else') {
-				txt += `}else{`;
+			} else if (action === 'elif' || action === 'else') {
+				if (stack[stack.length - 1] !== 'if') throw new Error(`Unexpected "${action}" outside of an "if" block`);
+				if (ended.has(stack.length)) throw new Error(`Unexpected "${action}" after "else"`);
+				if (action === 'elif') {
+					txt += `}else if(${inner}){`;
+				} else {
+					ended.add(stack.length);
+					txt += `}else{`;
+				}
 			} else if (action in extra) {
 				if (inner) {
 					// parse arguments, `defer=true` -> `{ defer: true }`
@@ -160,6 +168,8 @@ export function gen(input, options) {
 			}
 		} else if (char === '/') {
 			action = inner.substring(1);
+			if (!stack.length) throw new Error(`Unexpected "/${action}" with no open block`);
+			ended.delete(stack.length);
 			inner = stack.pop();
 			close();
 			if (action === inner) txt += '}';
