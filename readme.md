@@ -39,7 +39,7 @@
 $ npm install --save tempura
 ```
 
-Tempura is an ES Module. Load it with `import`, or with `require()` in Node 20.19+, Node 22.12+, and Bun.
+Tempura is an ES Module for Node 22+ and Bun. Load it with `import`, or with `require()` in Node 22.12+ and Bun.
 
 ## Usage
 
