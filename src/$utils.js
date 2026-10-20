@@ -1,7 +1,7 @@
 const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const NAME = /[a-zA-Z$_][^\s=]*/y;
 const IDENT = /^[a-zA-Z$_][\w$]*$/;
-const KEYWORDS = new Set('await delete false in instanceof new null this true typeof undefined void yield'.split(' '));
+const KEYWORDS = /^(?:await|delete|false|in|instanceof|new|null|this|true|typeof|undefined|void|yield)$/;
 const LITERAL = /[\\`]|\$\{/g;
 const EACH = /\sas[\s(]/;
 const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
@@ -205,7 +205,7 @@ export function gen(input, options) {
 			else wip += '${$$1(' + inner + ')}';
 			if (options.loose) {
 				while (tmp = VAR.exec(inner)) {
-					if (!KEYWORDS.has(tmp[1])) initials.add(tmp[1]);
+					if (!KEYWORDS.test(tmp[1])) initials.add(tmp[1]);
 				}
 			}
 		}

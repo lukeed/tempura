@@ -2,7 +2,7 @@
 
 This example demonstrates how to incorporate `tempura` within a Cloudflare Worker. However, this could be _any_ application and/or environment so long as a build step is required.
 
-Put differently, this example illustrates how tempura's esbuild and/or Rolldown plugins can be used within a project, transforming your `*.hbs` template files into JavaScript functions that your built output can use. This means that **no `tempura` runtime code** appears in your built code – except the `tempura.esc` (189 bytes), but only if you use HTML-escaped sequences.
+Put differently, this example illustrates how tempura's esbuild and/or Rolldown plugins can be used within a project, transforming your `*.hbs` template files into JavaScript functions that your built output can use. This means that **no `tempura` runtime code** appears in your built code – except the `tempura.esc` (237 bytes, minified), but only if you use HTML-escaped sequences.
 
 ## Build Commands
 

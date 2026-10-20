@@ -92,6 +92,26 @@ build('transform :: fails the build on a template error', async () => {
 	}
 });
 
+build('tree-shakes everything but `esc` from a transformed template', async () => {
+	let dir = await fixture();
+	try {
+		let { outputFiles } = await esbuild.build({
+			entryPoints: [join(dir, 'entry.js')],
+			alias: { tempura: CORE },
+			bundle: true,
+			format: 'esm',
+			write: false,
+			plugins: [plugins.esbuild.transform()],
+		});
+		let code = outputFiles[0].text;
+		assert.match(code, 'function esc(');
+		assert.not.match(code, 'yield');
+		assert.not.match(code, 'function gen(');
+	} finally {
+		await rm(dir, { recursive: true, force: true });
+	}
+});
+
 build.run();
 
 // ---
