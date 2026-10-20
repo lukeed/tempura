@@ -13,7 +13,7 @@ export interface Options {
 }
 
 export function esc(value: string|unknown): string;
-export function transform(input: string, options?: Options & { format?: 'esm' | 'cjs' }): string;
+export function transform(input: string, options?: Options): string;
 
 type CompileOptions = Options & { escape?: typeof esc };
 export function compile(input: string, options?: CompileOptions & { async: true }): <T extends Args> (data?: T, blocks?: Blocks) => Promise<string>;

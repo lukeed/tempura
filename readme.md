@@ -22,7 +22,7 @@
 ## Features
 
 * **Extremely lightweight**<br>
-  _Everything is `2.20 kB` (gzip) – even less with tree-shaking!_
+  _Everything is `2.16 kB` (gzip) – even less with tree-shaking!_
 
 * **Super Performant**<br>
   _Significantly [faster](#benchmarks) than the big names; and the small ones._
@@ -38,6 +38,8 @@
 ```
 $ npm install --save tempura
 ```
+
+Tempura is an ES Module. Load it with `import`, or with `require()` in Node 20.19+, Node 22.12+, and Bun.
 
 ## Usage
 
@@ -90,11 +92,6 @@ let toESM = transform(template);
 console.log(typeof toESM); //=> "string"
 console.log(toESM);
 //=> `import{esc as $$1}from"tempura";export default function($$3,$$2){...}`
-
-let toCJS = transform(template, { format: 'cjs' });
-console.log(typeof toCJS); //=> "string"
-console.log(toCJS);
-//=> `var $$1=require("tempura").esc;module.exports=function($$3,$$2){...}`
 
 
 // Convert the template into a live function

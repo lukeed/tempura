@@ -85,11 +85,10 @@ let template = `
   {{/if}}
 `;
 
-// produces ESM format by default
 let esm = tempura.transform(template);
 console.log(typeof esm); //=> "string"
 console.log(esm);
-//=> 'import{esc as $$1}from"tempura";export default function($$3,$$2){var{age}=$$3,x=``;x+=``;if(age < 100){x+=`You\'re not 100+ yet"`;}else{x+=`What\'s the secret?`;}return x}'
+//=> 'import{esc as $$1}from"tempura";export default function($$3,$$2){var{age}=$$3,$$x=`\n  `;$$x+=`\n  `;if(age < 100){$$x+=`\n    You\'re not 100+ yet\n  `;}else{$$x+=`\n    What\'s the secret?\n  `;}return $$x}'
 ```
 
 #### input
@@ -99,15 +98,9 @@ The template to be converted.
 
 #### options
 
-All common [Options](#options-2) are supported, in addition to:
+All common [Options](#options-2) are supported.
 
-#### options.format
-Type: `"esm"` or `"cjs"`<br>
-Default: `"esm"`
-
-Modify the generated output to be compliant with the CommonJS or ES Module format.
-
-> **Note:** Most bundlers and/or upstream consumers can understand (and prefer) the ESM format.
+The output is always an ES Module. It imports `esc` from `tempura`, and its default export is the template function.
 
 
 ## Options

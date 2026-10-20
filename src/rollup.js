@@ -1,7 +1,7 @@
 import * as tempura from 'tempura';
 
 export function transform(options) {
-	let { filter, format, ...config } = options || {};
+	let { filter, ...config } = options || {};
 
 	filter = filter || /\.hbs$/;
 

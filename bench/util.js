@@ -1,6 +1,6 @@
-const { Suite } = require('benchmark');
+import Benchmark from 'benchmark';
 
-exports.runner = function (name, contenders, options={}) {
+export function runner(name, contenders, options={}) {
 	if (options.assert) {
 		console.log('\nValidation (%s)', name);
 		Object.keys(contenders).forEach(name => {
@@ -19,7 +19,7 @@ exports.runner = function (name, contenders, options={}) {
 	}
 
 	console.log('\nBenchmark (%s)', name);
-	const bench = new Suite().on('cycle', e => {
+	const bench = new Benchmark.Suite().on('cycle', e => {
 		console.log('  ' + e.target);
 	});
 

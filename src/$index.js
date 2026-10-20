@@ -29,11 +29,7 @@ export function compile(input, options={}) {
 }
 
 export function transform(input, options={}) {
-	return (
-		options.format === 'cjs'
-		? 'var $$1=require("tempura").esc;module.exports='
-		: 'import{esc as $$1}from"tempura";export default '
-	) + (
+	return 'import{esc as $$1}from"tempura";export default ' + (
 		options.async ? 'async ' : ''
 	) + 'function($$3,$$2){'+gen(input, options)+'}';
 }

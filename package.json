@@ -3,8 +3,8 @@
   "version": "0.4.1",
   "repository": "lukeed/tempura",
   "description": "A light, crispy, and delicious template engine",
+  "type": "module",
   "module": "dist/index.mjs",
-  "main": "dist/index.js",
   "types": "index.d.ts",
   "license": "MIT",
   "author": {
@@ -13,10 +13,10 @@
     "url": "https://lukeed.com"
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=20.19"
   },
   "scripts": {
-    "build": "bun bin && bunx --bun bundt",
+    "build": "bun bin && bunx --bun bundt --module",
     "test": "bunx --bun uvu test"
   },
   "files": [
@@ -28,18 +28,15 @@
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "default": "./dist/index.mjs"
     },
     "./esbuild": {
       "types": "./esbuild/index.d.ts",
-      "import": "./esbuild/index.mjs",
-      "require": "./esbuild/index.js"
+      "default": "./esbuild/index.mjs"
     },
     "./rollup": {
       "types": "./rollup/index.d.ts",
-      "import": "./rollup/index.mjs",
-      "require": "./rollup/index.js"
+      "default": "./rollup/index.mjs"
     },
     "./package.json": "./package.json"
   },

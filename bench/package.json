@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "devDependencies": {
     "art-template": "4.13.2",
     "benchmark": "2.1.4",

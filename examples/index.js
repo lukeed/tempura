@@ -1,7 +1,7 @@
-const { join } = require('path');
-const { readFileSync } = require('fs');
-const { readFile } = require('fs/promises');
-const { compile } = require('../dist');
+import { readFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { compile } from '../dist/index.mjs';
 
 const user = {
 	firstname: 'Luke',
@@ -23,7 +23,7 @@ const blocks = {
 	include(args) {
 		let { src, ...rest } = args;
 		let render = Cache[src] || compile(
-			readFileSync(file, 'utf8'),
+			readFileSync(join(import.meta.dirname, src), 'utf8'),
 			{ blocks }
 		);
 		return render(rest);
@@ -32,19 +32,14 @@ const blocks = {
 
 const Cache = {};
 
-(async function () {
-	for (let name of examples) {
-		let render = Cache[name];
+for (let name of examples) {
+	let render = Cache[name];
 
-		if (!render) {
-			let file = join(__dirname, name);
-			let data = await readFile(file, 'utf8');
-			render = Cache[name] = compile(data, { blocks });
-		}
-		console.log('\n\n>>>', name);
-		console.log(render(user));
+	if (!render) {
+		let file = join(import.meta.dirname, name);
+		let data = await readFile(file, 'utf8');
+		render = Cache[name] = compile(data, { blocks });
 	}
-})().catch(err => {
-	console.error('Oops', err.stack);
-	process.exitCode = 1;
-});
+	console.log('\n\n>>>', name);
+	console.log(render(user));
+}
