@@ -335,6 +335,12 @@ compile('should use blocks given at call time', () => {
 	assert.is(render({}, { show: () => 'other' }), 'other');
 });
 
+compile('should print backticks, backslashes, and "${" in text as they are', () => {
+	let text = '<script>let a = `x`; let b = ${c}; /\\d+/;</script>';
+	assert.is(tempura.compile(text)(), text);
+	assert.is(tempura.compile(text + '{{ v }}', { props: ['v'] })({ v: '`' }), text + '`');
+});
+
 compile.run();
 
 // ---
