@@ -6,6 +6,8 @@ In order to do so, custom blocks must be defined via [`options.blocks`](/docs/ap
 
 > **Important:** A parsing error will be thrown when a template references a custom block (eg, `{{#foo}}`) but _has not defined_ an `options.blocks.foo` function.
 
+Block names may contain `.` and `/` characters, such as `{{#icons.star}}` or `{{#partials/nav}}`.
+
 
 ## Definition
 
@@ -107,6 +109,14 @@ Argument values may be any valid JavaScript data type and may also reference oth
 ```
 
 > **Note:** You can write Arrays and objects inline, but it can get messy!
+
+A value ends at the first whitespace. To pass an expression with spaces, wrap it in parentheses:
+
+```hbs
+{{#nav active=(page.section === 'docs') }}
+```
+
+Tempura throws a parsing error when it cannot read an argument, such as a value with no key (`{{#foo "bar"}}`) or an unwrapped expression (`{{#nav active=page.section === 'docs'}}`).
 
 
 ## Invoking Blocks from Blocks
