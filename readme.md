@@ -137,20 +137,20 @@ The following is a subset of the full results, presented without context. Again,
 
 ```
 Benchmark: Render w/ raw values (no escape)
-  pug                x 55,636 ops/sec ±0.90% (101 runs sampled)
-  handlebars         x 13,525 ops/sec ±0.28% (96 runs sampled)
-  ejs                x  1,372 ops/sec ±0.29% (97 runs sampled)
-  dot                x 72,558 ops/sec ±0.50% (100 runs sampled)
-  art-template       x 74,486 ops/sec ±0.31% (99 runs sampled)
-  tempura            x 67,844 ops/sec ±0.72% (92 runs sampled)
+  pug                x 54,320 ops/sec ±1.12% (98 runs sampled)
+  handlebars         x 13,553 ops/sec ±0.12% (98 runs sampled)
+  ejs                x  1,372 ops/sec ±0.21% (100 runs sampled)
+  dot                x 71,294 ops/sec ±0.61% (101 runs sampled)
+  art-template       x 73,490 ops/sec ±0.25% (95 runs sampled)
+  tempura            x 66,696 ops/sec ±0.51% (92 runs sampled)
 
 Benchmark: Render w/ escaped values
-  pug                x 4,098 ops/sec ±0.50% (99 runs sampled)
-  handlebars         x 2,080 ops/sec ±0.11% (98 runs sampled)
-  ejs                x   822 ops/sec ±0.25% (96 runs sampled)
-  dot                x 1,906 ops/sec ±0.22% (100 runs sampled)
-  art-template       x 3,950 ops/sec ±0.15% (101 runs sampled)
-  tempura            x 4,674 ops/sec ±0.14% (100 runs sampled)
+  pug                x 4,641 ops/sec ±0.31% (98 runs sampled)
+  handlebars         x 2,135 ops/sec ±0.28% (98 runs sampled)
+  ejs                x   808 ops/sec ±0.17% (96 runs sampled)
+  dot                x 1,967 ops/sec ±0.28% (97 runs sampled)
+  art-template       x 4,550 ops/sec ±2.33% (97 runs sampled)
+  tempura            x 5,191 ops/sec ±1.41% (99 runs sampled)
 ```
 
 ## License
