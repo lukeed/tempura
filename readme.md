@@ -6,7 +6,7 @@
   <a href="https://npmjs.org/package/tempura">
     <img src="https://badgen.now.sh/npm/v/tempura" alt="version" />
   </a>
-  <a href="https://travis-ci.org/lukeed/tempura">
+  <a href="https://github.com/lukeed/tempura/actions">
     <img src="https://github.com/lukeed/tempura/workflows/CI/badge.svg" alt="CI" />
   </a>
   <a href="https://licenses.dev/npm/tempura">
@@ -15,9 +15,6 @@
   <a href="https://npmjs.org/package/tempura">
     <img src="https://badgen.now.sh/npm/dm/tempura" alt="downloads" />
   </a>
-  <a href="https://codecov.io/gh/lukeed/tempura">
-    <img src="https://badgen.now.sh/codecov/c/github/lukeed/tempura" alt="codecov" />
-  </a>
 </div>
 
 <div align="center">A light, crispy, and delicious template engine 🍤</div>
@@ -25,7 +22,7 @@
 ## Features
 
 * **Extremely lightweight**<br>
-  _Everything is `1.26 kB` (gzip) – even less with tree-shaking!_
+  _Everything is `2.00 kB` (gzip) – even less with tree-shaking!_
 
 * **Super Performant**<br>
   _Significantly [faster](#benchmarks) than the big names; and the small ones._
