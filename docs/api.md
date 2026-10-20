@@ -27,6 +27,8 @@ Convert a template into a `function` that can be executed.
 
 When called with the appropriate, template-specific arguments, the `Compiler` function will return a `string` or a `Promise<string>`, resulting in the desired template output.
 
+The `Compiler` function also accepts a `blocks` object as its second argument. When given, it replaces [`options.blocks`](#optionsblocks) for that call only.
+
 ```js
 let render = tempura.compile(`
   {{#expect age}}
