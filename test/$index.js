@@ -387,6 +387,13 @@ esc('should escape `"` character', () => {
 	);
 });
 
+esc("should escape `'` character", () => {
+	assert.is(
+		tempura.esc("here: '"),
+		'here: &#39;'
+	);
+});
+
 esc('should escape `&` character', () => {
 	assert.is(
 		tempura.esc('here: &'),
