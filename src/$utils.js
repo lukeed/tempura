@@ -2,11 +2,10 @@ const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const NAME = /[a-zA-Z$_][^\s=]*/y;
 const IDENT = /^[a-zA-Z$_][\w$]*$/;
 const KEYWORDS = new Set('await delete false in instanceof new null this true typeof undefined void yield'.split(' '));
-const LITERAL = /[\\`]|\$\{/g;
 const EACH = /\sas[\s(]/;
 const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
 
-function text(src, from, to) {
+function chunk(src, from, to) {
 	let end = to;
 	while (end > from && (src.charCodeAt(end - 1) === 10 || src.charCodeAt(end - 1) === 13)) end--;
 	return src.substring(from, end);
@@ -107,15 +106,31 @@ export function gen(input, options) {
 
 	let char, num, action, tmp;
 	let last = 0;
-	let wip='', txt='', match, inner;
+	let wip='', plain='', txt='', match, inner;
 
 	let extra=options.blocks||{}, stack=[], ended=new Set;
 	let initials = new Set(options.props||[]);
-	let literal = input.includes('`') || input.includes('\\') || input.includes('${');
+
+	function text(str) {
+		plain += str;
+	}
+
+	function flush() {
+		if (!plain) return;
+		wip += (wip ? '+' : '') + JSON.stringify(plain);
+		plain = '';
+	}
+
+	// a string first, so `{{{ a }}}{{{ b }}}` joins numbers, not adds them
+	function value(code) {
+		flush();
+		wip += (wip ? '+' : '""+') + code;
+	}
 
 	function close() {
+		flush();
 		if (wip.length > 0) {
-			txt += (txt ? '$$x+=' : '=') + '`' + wip + '`;';
+			txt += (txt ? '$$x+=' : '=') + wip + ';';
 		} else if (txt.length === 0) {
 			txt = '="";'
 		}
@@ -123,8 +138,7 @@ export function gen(input, options) {
 	}
 
 	while (match = tag(input, last)) {
-		tmp = text(input, last, match.index);
-		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
+		text(chunk(input, last, match.index));
 		last = match.index + match.text.length;
 
 		inner = match.inner.trim();
@@ -188,7 +202,7 @@ export function gen(input, options) {
 				}
 				inner = inner || '{}';
 				tmp = options.async ? 'await ' : '';
-				wip += '${' + tmp + '$$2["' + action + '"](' + inner + ',$$2)}';
+				value('(' + tmp + '$$2["' + action + '"](' + inner + ',$$2))');
 			} else {
 				throw new Error(`Unknown "${action}" block`);
 			}
@@ -201,8 +215,8 @@ export function gen(input, options) {
 			if (action === inner) txt += '}';
 			else throw new Error(`Expected to close "${inner}" block; closed "${action}" instead`);
 		} else {
-			if (match.raw) wip += '${' + inner + '}'; // {{{ raw }}}
-			else wip += '${$$1(' + inner + ')}';
+			if (match.raw) value('(' + inner + ')'); // {{{ raw }}}
+			else value('$$1(' + inner + ')');
 			if (options.loose) {
 				while (tmp = VAR.exec(inner)) {
 					if (!KEYWORDS.has(tmp[1])) initials.add(tmp[1]);
@@ -216,8 +230,7 @@ export function gen(input, options) {
 	}
 
 	if (last < input.length) {
-		tmp = text(input, last, input.length);
-		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
+		text(chunk(input, last, input.length));
 	}
 
 	close();
