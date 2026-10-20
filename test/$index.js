@@ -315,6 +315,11 @@ compile('should allow a value named `x`', () => {
 	assert.is(render(), 'A1');
 });
 
+compile('should close a tag after its own braces', () => {
+	let render = tempura.compile(`{"a": {{ n }}}|{{ s === '}}' ? 'y' : 'n' }}|{{{ html }}}|{{! it's {a} note }}end`, { props: ['n', 's', 'html'] });
+	assert.is(render({ n: 2, s: '}}', html: '<b>' }), '{"a": 2}|y|<b>|end');
+});
+
 compile.run();
 
 // ---
