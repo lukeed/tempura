@@ -4,6 +4,7 @@ const IDENT = /^[a-zA-Z$_][\w$]*$/;
 const KEYWORDS = new Set('await delete false in instanceof new null this true typeof undefined void yield'.split(' '));
 const LITERAL = /[\\`]|\$\{/g;
 const EACH = /\sas[\s(]/;
+const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
 
 function text(src, from, to) {
 	let end = to;
@@ -15,10 +16,15 @@ function space(char) {
 	return char === ' ' || char === '\t' || char === '\n' || char === '\r';
 }
 
+function quoted(code) {
+	return code === 34 || code === 39 || code === 96;
+}
+
 function quote(src, i) {
-	for (let q = src[i++]; i < src.length; i++) {
-		if (src[i] === '\\') i++;
-		else if (src[i] === q) return i + 1;
+	for (let q = src.charCodeAt(i++), code; i < src.length; i++) {
+		code = src.charCodeAt(i);
+		if (code === BACKSLASH) i++;
+		else if (code === q) return i + 1;
 	}
 	return -1;
 }
@@ -27,23 +33,24 @@ function quote(src, i) {
 function tag(src, from) {
 	let index = src.indexOf('{{', from);
 	if (index === -1) return;
-	let raw = src[index + 2] === '{';
+	let raw = src.charCodeAt(index + 2) === OPEN;
 	let start = index + (raw ? 3 : 2);
-	let end = raw ? '}}}' : '}}';
 	let at = start;
 	while (space(src[at])) at++;
 	let note = src[at] === '!';
-	for (let i = start, depth = 0; i < src.length; i++) {
-		let char = src[i];
-		if (!note && (char === '"' || char === "'" || char === '`')) {
+	for (let i = start, depth = 0, code; i < src.length; i++) {
+		code = src.charCodeAt(i);
+		if (!note && quoted(code)) {
 			let next = quote(src, i);
 			if (next !== -1) i = next - 1;
-		} else if (!note && char === '{') {
+		} else if (!note && code === OPEN) {
 			depth++;
-		} else if (!note && char === '}' && depth > 0) {
+		} else if (code !== CLOSE) {
+			continue;
+		} else if (!note && depth > 0) {
 			depth--;
-		} else if (src.startsWith(end, i)) {
-			return { index, raw, text: src.substring(index, i + end.length), inner: src.substring(start, i) };
+		} else if (src.charCodeAt(i + 1) === CLOSE && (!raw || src.charCodeAt(i + 2) === CLOSE)) {
+			return { index, raw, text: src.substring(index, i + (raw ? 3 : 2)), inner: src.substring(start, i) };
 		}
 	}
 }
