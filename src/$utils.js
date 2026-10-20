@@ -1,10 +1,15 @@
-const ENDLINES = /[\r\n]+$/g;
 const VAR = /(?:^|[-*+^|%/&=\s])([a-zA-Z$_][\w$]*)(?:(?=$|[-*+^|%/&=\s]))/g;
 const NAME = /[a-zA-Z$_][^\s=]*/y;
 const IDENT = /^[a-zA-Z$_][\w$]*$/;
 const KEYWORDS = new Set('await delete false in instanceof new null this true typeof undefined void yield'.split(' '));
 const LITERAL = /[\\`]|\$\{/g;
 const EACH = /\sas[\s(]/;
+
+function text(src, from, to) {
+	let end = to;
+	while (end > from && (src.charCodeAt(end - 1) === 10 || src.charCodeAt(end - 1) === 13)) end--;
+	return src.substring(from, end);
+}
 
 function space(char) {
 	return char === ' ' || char === '\t' || char === '\n' || char === '\r';
@@ -105,7 +110,7 @@ export function gen(input, options) {
 	}
 
 	while (match = tag(input, last)) {
-		tmp = input.substring(last, match.index).replace(ENDLINES, '');
+		tmp = text(input, last, match.index);
 		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
 		last = match.index + match.text.length;
 
@@ -193,7 +198,7 @@ export function gen(input, options) {
 	}
 
 	if (last < input.length) {
-		tmp = input.substring(last).replace(ENDLINES, '');
+		tmp = text(input, last, input.length);
 		wip += literal ? tmp.replace(LITERAL, '\\$&') : tmp;
 	}
 
