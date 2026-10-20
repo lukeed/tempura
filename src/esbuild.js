@@ -11,16 +11,13 @@ function toErrors(err) {
 }
 
 export function transform(options) {
-	let { filter, format, ...config } = options || {};
+	let { filter, ...config } = options || {};
 
 	filter = filter || /\.hbs$/;
 
 	return {
 		name: 'tempura',
 		setup(build) {
-			// respect `format` or rely on `esbuild` config
-			config.format = format || build.initialOptions.format;
-
 			build.onLoad({ filter }, async (args) => {
 				let source = await readFile(args.path, 'utf8');
 				let output = { loader: 'js' };

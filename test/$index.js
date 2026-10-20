@@ -21,7 +21,7 @@ transform('should include "esc" import via "tempura" module', () => {
 	assert.match(output, '"tempura"');
 });
 
-transform('format :: ESM (default)', () => {
+transform('format :: ESM', () => {
 	let output = tempura.transform('');
 	assert.match(output, 'import{esc as $$1}from"tempura";');
 	assert.match(output, ';export default function($$3,$$2){');
@@ -31,18 +31,6 @@ transform('format :: ESM (default)', () => {
 transform('format :: ESM :: async', () => {
 	let output = tempura.transform('', { async: true });
 	assert.match(output, ';export default async function($$3,$$2){');
-});
-
-transform('format :: CommonJS', () => {
-	let output = tempura.transform('', { format: 'cjs' });
-	assert.match(output, 'var $$1=require("tempura").esc;');
-	assert.match(output, ';module.exports=function($$3,$$2){');
-	assert.ok(output.endsWith('}'), 'close function');
-});
-
-transform('format :: CommonJS :: async', () => {
-	let output = tempura.transform('', { format: 'cjs', async: true });
-	assert.match(output, ';module.exports=async function($$3,$$2){');
 });
 
 transform('should bubble parsing errors', () => {

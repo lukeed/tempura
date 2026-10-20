@@ -7,11 +7,6 @@ export function transform(options?: Options & {
 	 * @default /\.hbs$/
 	 */
 	filter?: RegExp;
-	/**
-	 * Output format.
-	 * Defaults to esbuild value.
-	 */
-	format?: 'esm' | 'cjs';
 }): Plugin;
 
 export function compile(options: Options & {
