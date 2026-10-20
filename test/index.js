@@ -333,6 +333,55 @@ compile.run();
 
 // ---
 
+const whitespace = suite('whitespace');
+
+whitespace('should keep line breaks between values', () => {
+	let render = tempura.compile('{{ a }}\n{{ a }}\n\n{{{ a }}}', { props: ['a'] });
+	assert.is(render({ a: 'x' }), 'x\nx\n\nx');
+});
+
+whitespace('should keep line breaks at the end', () => {
+	assert.is(tempura.compile('a\n')(), 'a\n');
+	assert.is(tempura.compile('a\n\n')(), 'a\n\n');
+	assert.is(tempura.compile('{{ a }}\n', { props: ['a'] })({ a: 'x' }), 'x\n');
+});
+
+whitespace('should drop a block line, with its indent and line break', () => {
+	let render = tempura.compile('<ul>\n  {{#each xs as x}}\n  <li>{{ x }}</li>\n  {{/each}}\n</ul>\n', { props: ['xs'] });
+	assert.is(render({ xs: [1, 2] }), '<ul>\n  <li>1</li>\n  <li>2</li>\n</ul>\n');
+});
+
+whitespace('should drop #if, #elif, #else, and comment lines', () => {
+	let render = tempura.compile('{{! note }}\n{{#if a}}\n\tA\n{{#elif b}}\n\tB\n{{#else}}\n\tC\n{{/if}}\nend', { props: ['a', 'b'] });
+	assert.is(render({ a: true }), '\tA\nend');
+	assert.is(render({ b: true }), '\tB\nend');
+	assert.is(render({}), '\tC\nend');
+});
+
+whitespace('should drop #expect, #var, and custom block lines', () => {
+	let render = tempura.compile('{{#expect a}}\n{{#var b = a + 1}}\n{{#show}}\n{{ b }}\n', { blocks: { show: () => '' } });
+	assert.is(render({ a: 1 }), '2\n');
+});
+
+whitespace('should keep a block that shares its line', () => {
+	let render = tempura.compile('<p>{{#if a}}yes{{/if}}</p>\n  {{#if a}}yes{{/if}}\n', { props: ['a'] });
+	assert.is(render({ a: true }), '<p>yes</p>\n  yes\n');
+});
+
+whitespace('should keep a value line, even alone', () => {
+	let render = tempura.compile('<p>\n  {{ a }}\n</p>', { props: ['a'] });
+	assert.is(render({ a: 'x' }), '<p>\n  x\n</p>');
+});
+
+whitespace('should find block lines that end with CRLF', () => {
+	let render = tempura.compile('a\r\n{{#if ok}}\r\nb\r\n{{/if}}\r\nc', { props: ['ok'] });
+	assert.is(render({ ok: true }).replace(/\r/g, ''), 'a\nb\nc');
+});
+
+whitespace.run();
+
+// ---
+
 const esc = suite('esc');
 
 esc('should be a function', () => {

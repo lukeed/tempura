@@ -10,10 +10,19 @@ const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
 
 type Tag = { index: number; raw: boolean; text: string; inner: string };
 
-function text(src: string, from: number, to: number): string {
-	let end = to;
-	while (end > from && (src.charCodeAt(end - 1) === 10 || src.charCodeAt(end - 1) === 13)) end--;
-	return src.substring(from, end);
+function blank(code: number): boolean {
+	return code === 32 || code === 9;
+}
+
+// A block or comment tag alone on its line takes the whole line: its indent, the tag, and its line break.
+function line(src: string, last: number, from: number, to: number): [number, number] {
+	let start = from, end = to;
+	while (start > last && blank(src.charCodeAt(start - 1))) start--;
+	while (end < src.length && blank(src.charCodeAt(end))) end++;
+	if (start > 0 && src.charCodeAt(start - 1) !== 10) return [from, to];
+	if (src.charCodeAt(end) === 13) end++;
+	if (end < src.length && src.charCodeAt(end) !== 10) return [from, to];
+	return [start, Math.min(end + 1, src.length)];
 }
 
 function name(code: number, more: boolean): boolean {
@@ -129,12 +138,15 @@ export function gen(input: string, options: Options = {}): string {
 	}
 
 	while (match = tag(input, last)) {
-		chunk = text(input, last, match.index);
-		wip += literal ? chunk.replace(LITERAL, '\\$&') : chunk;
-		last = match.index + match.text.length;
-
 		inner = match.inner.trim();
 		char = inner.charAt(0);
+
+		let [from, to] = (char === '#' || char === '/' || char === '!')
+			? line(input, last, match.index, match.index + match.text.length)
+			: [match.index, match.index + match.text.length];
+		chunk = input.substring(last, from);
+		wip += literal ? chunk.replace(LITERAL, '\\$&') : chunk;
+		last = to;
 
 		if (char === '!') {
 			// comment, continue
@@ -222,7 +234,7 @@ export function gen(input: string, options: Options = {}): string {
 	}
 
 	if (last < input.length) {
-		chunk = text(input, last, input.length);
+		chunk = input.substring(last);
 		wip += literal ? chunk.replace(LITERAL, '\\$&') : chunk;
 	}
 
