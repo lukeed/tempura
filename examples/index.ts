@@ -1,5 +1,5 @@
 // @ts-check
-import * as tempura from '../';
+import * as tempura from '../dist/index.js';
 
 interface User {
 	firstname: string;
