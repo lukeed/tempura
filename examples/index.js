@@ -23,7 +23,7 @@ const blocks = {
 	include(args) {
 		let { src, ...rest } = args;
 		let render = Cache[src] || compile(
-			readFileSync(file, 'utf8'),
+			readFileSync(join(import.meta.dirname, src), 'utf8'),
 			{ blocks }
 		);
 		return render(rest);
