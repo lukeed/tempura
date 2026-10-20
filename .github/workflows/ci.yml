@@ -14,7 +14,7 @@ on:
       - 'bench/**'
       - '*.md'
     branches:
-      - master
+      - main
 
 jobs:
   test:
