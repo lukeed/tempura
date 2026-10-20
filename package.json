@@ -21,8 +21,7 @@
   },
   "files": [
     "*.d.ts",
-    "esbuild",
-    "rollup",
+    "plugins",
     "dist"
   ],
   "exports": {
@@ -30,20 +29,15 @@
       "types": "./index.d.ts",
       "default": "./dist/index.mjs"
     },
-    "./esbuild": {
-      "types": "./esbuild/index.d.ts",
-      "default": "./esbuild/index.mjs"
-    },
-    "./rollup": {
-      "types": "./rollup/index.d.ts",
-      "default": "./rollup/index.mjs"
+    "./plugins": {
+      "types": "./plugins/index.d.ts",
+      "default": "./plugins/index.mjs"
     },
     "./package.json": "./package.json"
   },
   "modes": {
     "default": "src/index.js",
-    "esbuild": "src/esbuild.js",
-    "rollup": "src/rollup.js"
+    "plugins": "src/plugins.js"
   },
   "keywords": [
     "engine",
@@ -55,6 +49,7 @@
   ],
   "devDependencies": {
     "bundt": "1.1.5",
+    "esbuild": "0.28.2",
     "uvu": "0.5.1"
   }
 }

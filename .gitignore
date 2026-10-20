@@ -7,6 +7,5 @@ node_modules
 # generated
 /src/index.js
 /index.d.ts
-/esbuild
-/rollup
+/plugins
 /dist
