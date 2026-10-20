@@ -320,6 +320,13 @@ compile('should close a tag after its own braces', () => {
 	assert.is(render({ n: 2, s: '}}', html: '<b>' }), '{"a": 2}|y|<b>|end');
 });
 
+compile('should call ".", "/", and one-character block names', () => {
+	let render = tempura.compile('{{#a}}|{{#a.b}}|{{#a/b}}', {
+		blocks: { a: () => 1, 'a.b': () => 2, 'a/b': () => 3 }
+	});
+	assert.is(render(), '1|2|3');
+});
+
 compile.run();
 
 // ---
