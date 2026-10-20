@@ -12,6 +12,10 @@ function text(src, from, to) {
 	return src.substring(from, end);
 }
 
+function name(code, more) {
+	return (code >= 97 && code <= 122) || (code >= 65 && code <= 90) || (code >= 48 && code <= 57) || code === 95 || (more && (code === 46 || code === 47));
+}
+
 function space(char) {
 	return char === ' ' || char === '\t' || char === '\n' || char === '\r';
 }
@@ -130,7 +134,12 @@ export function gen(input, options) {
 			// comment, continue
 		} else if (char === '#') {
 			close();
-			[, action, inner] = /^#\s*(\w[\w./]*)\s*([^]*)/.exec(inner);
+			for (num = 1; space(inner[num]);) num++;
+			for (tmp = num; tmp < inner.length && name(inner.charCodeAt(tmp), tmp > num);) tmp++;
+			if (tmp === num) throw new Error(`Cannot read the name of block: ${JSON.stringify(match.text)}`);
+			action = inner.substring(num, tmp);
+			while (space(inner[tmp])) tmp++;
+			inner = inner.substring(tmp);
 
 			if (action === 'expect') {
 				inner.split(/[\n\r\s\t]*,[\n\r\s\t]*/g).forEach(key => {
