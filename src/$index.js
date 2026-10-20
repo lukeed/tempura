@@ -1,5 +1,6 @@
-const ESCAPE = /[&"<]/g, CHARS = {
+const ESCAPE = /[&"'<]/g, CHARS = {
 	'"': '&quot;',
+	"'": '&#39;',
 	'&': '&amp;',
 	'<': '&lt;',
 };

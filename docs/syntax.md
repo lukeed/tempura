@@ -60,7 +60,7 @@ produces this output:
 
 ### Escaped Values
 
-By default, all expressions are HTML-escaped. For example, if the value contains the `"`, `&`, or `<` characters, they'd be encoded into the `&quot;`, `&amp;`, and `&lt;` sequences, respectively.
+By default, all expressions are HTML-escaped. For example, if the value contains the `"`, `'`, `&`, or `<` characters, they'd be encoded into the `&quot;`, `&#39;`, `&amp;`, and `&lt;` sequences, respectively.
 
 > **Note:** The HTML-escape function can be customized via the [`escape`](/docs/api.md#optionsescape) option.
 
