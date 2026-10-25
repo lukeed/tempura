@@ -308,6 +308,22 @@ compile('should close a tag after its own braces', () => {
 	assert.is(render({ n: 2, s: '}}', html: '<b>' }), '{"a": 2}|y|<b>|end');
 });
 
+compile('should read quotes and braces in a regex as part of the regex', () => {
+	let render = tempura.compile("{{ s.replace(/`/g, '') }}|{{ s.replace(/`/g, '') }}|{{ s.replace(/['\"]/g, '') }}|{{ s.replace(/[}/]/g, '') }}|{{{ s.replace(/\\}/g, '') }}}", { props: ['s'] });
+	assert.is(render({ s: 'a`"\'}/b' }), 'a&quot;&#39;}/b|a&quot;&#39;}/b|a`}/b|a`&quot;&#39;b|a`"\'/b');
+});
+
+compile('should read a regex after a block name, an operator, or a keyword', () => {
+	let render = tempura.compile("{{#if /`/.test(s)}}A{{#elif !/'/.test(s)}}B{{/if}}|{{#var r = typeof /`/}}{{ r }}|{{ [/'/, /'/].length }}", { props: ['s'] });
+	assert.is(render({ s: '`' }), 'A|object|2');
+	assert.is(render({ s: 'x' }), 'B|object|2');
+});
+
+compile('should read a slash after a value as division', () => {
+	let render = tempura.compile("{{ a / b }}|{{ (a + 2) / b / 2 }}|{{ c[0] / b }}|{{ a++ / b }}|{{ '`' }}", { props: ['a', 'b', 'c'] });
+	assert.is(render({ a: 4, b: 2, c: [6] }), '2|1.5|3|2|`');
+});
+
 compile('should call ".", "/", and one-character block names', () => {
 	let render = tempura.compile('{{#a}}|{{#a.b}}|{{#a/b}}', {
 		blocks: { a: () => 1, 'a.b': () => 2, 'a/b': () => 3 }

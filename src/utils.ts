@@ -6,7 +6,9 @@ const IDENT = /^[a-zA-Z$_][\w$]*$/;
 const KEYWORDS = /^(?:await|delete|false|in|instanceof|new|null|this|true|typeof|undefined|void|yield)$/;
 const LITERAL = /[\\`]|\$\{/g;
 const EACH = /\sas[\s(]/;
-const OPEN = 123, CLOSE = 125, BACKSLASH = 92;
+const OPEN = 123, CLOSE = 125, BACKSLASH = 92, SLASH = 47;
+const OPERAND = /(?:^|[-(,=:[!&|?{;~^<>*%+]|#\s*[\w./]+\s|(?:^|[^\w$.])(?:await|case|delete|do|else|in|instanceof|new|of|return|typeof|void|yield))\s*$/;
+const STEP = /(?:\+\+|--)\s*$/;
 
 type Tag = { index: number; raw: boolean; text: string; inner: string };
 
@@ -46,7 +48,25 @@ function quote(src: string, i: number): number {
 	return -1;
 }
 
-// The next {{ … }} or {{{ … }}} from `from`; it closes outside quotes and nested braces, except in a {{! comment }}.
+// The end of the regex literal at `i`, or -1 when the slash there is division.
+function regex(src: string, from: number, i: number): number {
+	let before = src.substring(from, i);
+	if (!OPERAND.test(before) || STEP.test(before)) return -1;
+	for (let k = i + 1, set = false, code; k < src.length; k++) {
+		code = src.charCodeAt(k);
+		if (code === BACKSLASH) k++;
+		else if (code === 10) return -1;
+		else if (code === 91) set = true;
+		else if (code === 93) set = false;
+		else if (code === SLASH && !set) {
+			while (name(src.charCodeAt(k + 1), false)) k++;
+			return k + 1;
+		}
+	}
+	return -1;
+}
+
+// The next {{ … }} or {{{ … }}} from `from`; it closes outside quotes, regexes, and nested braces, except in a {{! comment }}.
 function tag(src: string, from: number): Tag | undefined {
 	let index = src.indexOf('{{', from);
 	if (index === -1) return;
@@ -59,6 +79,9 @@ function tag(src: string, from: number): Tag | undefined {
 		code = src.charCodeAt(i);
 		if (!note && quoted(code)) {
 			let next = quote(src, i);
+			if (next !== -1) i = next - 1;
+		} else if (!note && code === SLASH && i !== at) {
+			let next = regex(src, start, i);
 			if (next !== -1) i = next - 1;
 		} else if (!note && code === OPEN) {
 			depth++;
@@ -73,11 +96,14 @@ function tag(src: string, from: number): Tag | undefined {
 }
 
 function group(src: string, i: number): number {
-	for (let depth = 0; i < src.length; i++) {
+	for (let depth = 0, from = i; i < src.length; i++) {
 		let char = src[i];
 		if (char === '"' || char === "'" || char === '`') {
 			i = quote(src, i) - 1;
 			if (i < 0) return -1;
+		} else if (char === '/') {
+			let next = regex(src, from, i);
+			if (next !== -1) i = next - 1;
 		} else if (char === '(' || char === '{' || char === '[') {
 			depth++;
 		} else if ((char === ')' || char === '}' || char === ']') && --depth === 0) {
