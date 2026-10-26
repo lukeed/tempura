@@ -1,6 +1,6 @@
 {
   "name": "tempura",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": "lukeed/tempura",
   "description": "A light, crispy, and delicious template engine",
   "type": "module",
